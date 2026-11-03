@@ -117,12 +117,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = useCallback(async () => {
     const refresh = getRefreshToken();
+    await resetSession();
     try {
-      if (refresh) await api.auth.logout(refresh);
+      if (refresh) void api.auth.logout(refresh).catch(() => undefined);
     } catch {
       void 0;
     }
-    await resetSession();
   }, [resetSession]);
 
   const refreshBusinesses = useCallback(async () => {
