@@ -31,7 +31,7 @@ import {
 } from '../../components/ui';
 import { api } from '../../lib/api';
 import { daysAgoISO, formatMoney, titleCase, todayISO } from '../../lib/format';
-import { colors, radius, spacing, type } from '../../lib/theme';
+import { CURRENCY_CODE, colors, radius, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
 import { useToast } from '../../providers/ToastProvider';
 
@@ -187,14 +187,14 @@ export default function JournalFormScreen() {
               <View style={styles.flex}>
                 <Text style={styles.balanceLabel}>Debits</Text>
                 <Text style={styles.balanceValue}>
-                  {formatMoney(totals.debit, business.currency)}
+                  {formatMoney(totals.debit, CURRENCY_CODE)}
                 </Text>
               </View>
               <View style={styles.balanceDivider} />
               <View style={styles.flex}>
                 <Text style={styles.balanceLabel}>Credits</Text>
                 <Text style={styles.balanceValue}>
-                  {formatMoney(totals.credit, business.currency)}
+                  {formatMoney(totals.credit, CURRENCY_CODE)}
                 </Text>
               </View>
             </View>

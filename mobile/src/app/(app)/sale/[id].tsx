@@ -20,7 +20,7 @@ import {
 import { useBusinessRole } from '../../../hooks/useBusinessRole';
 import { api } from '../../../lib/api';
 import { formatDateTime, formatMoney, formatNumber, titleCase, toNumber } from '../../../lib/format';
-import { colors, radius, spacing, type } from '../../../lib/theme';
+import { CURRENCY_CODE, colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useToast } from '../../../providers/ToastProvider';
 
@@ -37,7 +37,7 @@ export default function SaleDetailScreen() {
     enabled: Boolean(business && id),
   });
 
-  const currency = business?.currency ?? 'LSL';
+  const currency = CURRENCY_CODE;
   const data = sale.data;
 
   const refund = useMutation({

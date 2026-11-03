@@ -22,7 +22,7 @@ import {
 import { useBusinessRole } from '../../hooks/useBusinessRole';
 import { api } from '../../lib/api';
 import { formatDate, formatMoney, relativeDay, titleCase, toNumber } from '../../lib/format';
-import { colors, radius, spacing, type } from '../../lib/theme';
+import { CURRENCY_CODE, colors, radius, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
 import { useLanguage } from '../../providers/LanguageProvider';
 import type { Account, JournalEntry } from '../../lib/types';
@@ -53,7 +53,7 @@ export default function BookkeepingScreen() {
     enabled: Boolean(business),
   });
 
-  const currency = business?.currency ?? 'LSL';
+  const currency = CURRENCY_CODE;
   const accountMap = useMemo(() => {
     const map = new Map<string, Account>();
     (accounts.data ?? []).forEach((account) => map.set(account.id, account));

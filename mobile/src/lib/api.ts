@@ -26,6 +26,14 @@ import type {
   TrialBalance,
   User,
 } from './types';
+import {
+  cacheKey,
+  cacheResponse,
+  enqueueRequest,
+  getCachedResponse,
+  getQueuedRequests,
+  removeQueuedRequest,
+} from './offline';
 
 const DEFAULT_API_URL =
   Platform.OS === 'android'
@@ -175,10 +183,18 @@ interface RequestOptions {
   auth?: boolean;
   retry?: boolean;
   headers?: Record<string, string>;
+  queueOffline?: boolean;
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, auth = true, retry = true, headers } = options;
+  const {
+    method = 'GET',
+    body,
+    auth = true,
+    retry = true,
+    headers,
+    queueOffline = true,
+  } = options;
   const requestHeaders: Record<string, string> = {
     Accept: 'application/json',
     ...headers,
@@ -194,6 +210,13 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch {
+    if (method === 'GET') {
+      const cached = await getCachedResponse<T>(cacheKey(path));
+      if (cached !== null) return cached;
+    } else if (queueOffline && auth) {
+      await enqueueRequest({ method, path, body, auth });
+      throw new ApiError(0, 'Saved on this device. It will sync when you are online.');
+    }
     throw new ApiError(0, 'Cannot reach the server. Check your connection and try again.');
   }
 
@@ -219,7 +242,33 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   if (response.status === 204) return undefined as T;
   const text = await response.text();
   if (!text) return undefined as T;
-  return JSON.parse(text) as T;
+  const payload = JSON.parse(text) as T;
+  if (method === 'GET') await cacheResponse(cacheKey(path), payload);
+  return payload;
+}
+
+export async function flushOfflineQueue(): Promise<number> {
+  let synced = 0;
+  const queued = await getQueuedRequests();
+  for (const item of queued) {
+    try {
+      await request(item.path, {
+        method: item.method,
+        body: item.body,
+        auth: item.auth,
+        queueOffline: false,
+      });
+      await removeQueuedRequest(item.id);
+      synced += 1;
+    } catch (error) {
+      if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
+        await removeQueuedRequest(item.id);
+        continue;
+      }
+      break;
+    }
+  }
+  return synced;
 }
 
 export interface ProductInput {

@@ -112,7 +112,7 @@ export default function ExpenseFormScreen() {
             <View style={styles.flex}>
               <Text style={styles.heroLabel}>Amount</Text>
               <Text style={styles.heroAmount}>
-                {business.currency} {amount ? Number(amount.replace(',', '.')).toFixed(2) : '0.00'}
+                LSL {amount ? Number(amount.replace(',', '.')).toFixed(2) : '0.00'}
               </Text>
               <Text style={styles.heroMeta}>{description.trim() || 'What was it for?'}</Text>
             </View>
@@ -129,7 +129,7 @@ export default function ExpenseFormScreen() {
             autoCapitalize="sentences"
           />
           <TextField
-            label={`Amount (${business.currency})`}
+                label="Amount (LSL)"
             placeholder="0.00"
             value={amount}
             onChangeText={setAmount}

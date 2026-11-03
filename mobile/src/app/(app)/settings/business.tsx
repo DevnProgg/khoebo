@@ -103,7 +103,7 @@ export default function BusinessSettingsScreen() {
                 </View>
                 <Text style={styles.heroName}>{business.name}</Text>
                 <Text style={styles.heroMeta}>
-                  {business.currency} · {titleCase(role ?? 'member')}
+                  LSL · {titleCase(role ?? 'member')}
                 </Text>
                 <View style={styles.slug}>
                   <Ionicons name="link-outline" size={13} color={colors.inkMuted} />
@@ -143,7 +143,7 @@ export default function BusinessSettingsScreen() {
                 <Text style={styles.readonlyLabel}>{t('businessName')}</Text>
                 <Text style={styles.readonlyValue}>{business.name}</Text>
                 <Text style={[styles.readonlyLabel, { marginTop: spacing.md }]}>{t('currencyCode')}</Text>
-                <Text style={styles.readonlyValue}>{business.currency}</Text>
+                <Text style={styles.readonlyValue}>LSL</Text>
                 <View style={styles.note}>
                   <Ionicons name="lock-closed-outline" size={16} color={colors.inkMuted} />
                   <Text style={styles.noteText}>
@@ -183,7 +183,7 @@ export default function BusinessSettingsScreen() {
               </View>
               <View style={styles.flex}>
                 <Text style={styles.businessName}>{item.name}</Text>
-                <Text style={styles.businessMeta}>{item.currency}</Text>
+                <Text style={styles.businessMeta}>LSL</Text>
               </View>
               {item.id === business?.id ? (
                 <Badge label={t('active')} tone="primary" icon="checkmark" />

@@ -31,7 +31,7 @@ import {
   todayISO,
   toNumber,
 } from '../../../lib/format';
-import { colors, radius, spacing, type } from '../../../lib/theme';
+import { CURRENCY_CODE, colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useLanguage } from '../../../providers/LanguageProvider';
 
@@ -79,7 +79,7 @@ export default function HomeScreen() {
     ]);
   };
 
-  const currency = business?.currency ?? 'LSL';
+  const currency = CURRENCY_CODE;
   const data = overview.data;
   const todayRevenue =
     data?.revenue_by_day.find((item) => item.date === end)?.revenue ?? 0;

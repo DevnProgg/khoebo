@@ -27,7 +27,7 @@ import {
   todayISO,
   toNumber,
 } from '../../lib/format';
-import { colors, spacing, type } from '../../lib/theme';
+import { CURRENCY_CODE, colors, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
 import { useLanguage } from '../../providers/LanguageProvider';
 
@@ -52,7 +52,7 @@ export default function AnalyticsScreen() {
     enabled: Boolean(business),
   });
 
-  const currency = business?.currency ?? 'LSL';
+  const currency = CURRENCY_CODE;
   const data = overview.data;
   const payments = Object.entries(data?.revenue_by_payment_method ?? {});
   const paymentTotal = payments.reduce((sum, [, value]) => sum + toNumber(value), 0);

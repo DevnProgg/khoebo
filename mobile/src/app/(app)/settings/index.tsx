@@ -78,7 +78,7 @@ export default function SettingsScreen() {
         <MenuRow
           icon="storefront-outline"
           title={t('businessProfile')}
-          subtitle={business ? `${business.name} · ${business.currency}` : t('noBusinessSelected')}
+          subtitle={business ? `${business.name} · LSL` : t('noBusinessSelected')}
           onPress={() => router.push('/(app)/settings/business')}
         />
         <MenuRow

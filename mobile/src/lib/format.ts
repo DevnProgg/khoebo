@@ -1,5 +1,5 @@
 import type { Decimal } from './types';
-import { currencySymbols } from './theme';
+import { CURRENCY_CODE, currencySymbols } from './theme';
 
 export const toNumber = (value: Decimal | null | undefined): number => {
   if (value === null || value === undefined) return 0;
@@ -9,7 +9,7 @@ export const toNumber = (value: Decimal | null | undefined): number => {
 
 export function formatMoney(
   value: Decimal | null | undefined,
-  currency = 'LSL',
+  currency = CURRENCY_CODE,
   compact = false,
 ): string {
   const amount = toNumber(value);

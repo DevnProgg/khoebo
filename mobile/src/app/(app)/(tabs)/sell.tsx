@@ -31,7 +31,7 @@ import {
 } from '../../../components/ui';
 import { api, type SaleInput } from '../../../lib/api';
 import { formatMoney, formatNumber, toNumber } from '../../../lib/format';
-import { colors, radius, shadow, spacing, type } from '../../../lib/theme';
+import { CURRENCY_CODE, colors, radius, shadow, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useToast } from '../../../providers/ToastProvider';
 import { useLanguage } from '../../../providers/LanguageProvider';
@@ -71,7 +71,7 @@ export default function SellScreen() {
     enabled: Boolean(business),
   });
 
-  const currency = business?.currency ?? 'LSL';
+  const currency = CURRENCY_CODE;
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     const list = products.data ?? [];

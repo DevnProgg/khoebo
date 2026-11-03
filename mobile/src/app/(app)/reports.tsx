@@ -25,7 +25,7 @@ import {
   todayISO,
   toNumber,
 } from '../../lib/format';
-import { colors, spacing, type } from '../../lib/theme';
+import { CURRENCY_CODE, colors, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
 import { useLanguage } from '../../providers/LanguageProvider';
 
@@ -44,7 +44,7 @@ export default function ReportsScreen() {
     return startOfMonthISO();
   }, [range]);
 
-  const currency = business?.currency ?? 'LSL';
+  const currency = CURRENCY_CODE;
 
   const trial = useQuery({
     queryKey: ['report-trial', business?.id],

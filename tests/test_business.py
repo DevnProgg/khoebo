@@ -9,19 +9,19 @@ def test_business_currency_is_lsl_only(
 
     assert business["currency"] == "LSL"
 
-    create_usd = client.post(
+    create_non_lsl = client.post(
         "/api/v1/businesses",
-        json={"name": "Dollar Business", "currency": "USD"},
+        json={"name": "Foreign Currency Business", "currency": "ZAR"},
         headers=owner["headers"],
     )
-    assert create_usd.status_code == 422
+    assert create_non_lsl.status_code == 422
 
-    update_usd = client.patch(
+    update_non_lsl = client.patch(
         f"/api/v1/businesses/{business['id']}",
-        json={"currency": "USD"},
+        json={"currency": "ZAR"},
         headers=owner["headers"],
     )
-    assert update_usd.status_code == 422
+    assert update_non_lsl.status_code == 422
 
 
 def test_create_business_seeds_owner_and_chart_of_accounts(

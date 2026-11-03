@@ -20,7 +20,7 @@ import {
 } from '../../components/ui';
 import { api } from '../../lib/api';
 import { formatDateTime, formatMoney, toNumber, titleCase } from '../../lib/format';
-import { colors, radius, spacing, type } from '../../lib/theme';
+import { CURRENCY_CODE, colors, radius, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
 import { useLanguage } from '../../providers/LanguageProvider';
 import type { SaleStatus } from '../../lib/types';
@@ -44,7 +44,7 @@ export default function SalesHistoryScreen() {
     enabled: Boolean(business),
   });
 
-  const currency = business?.currency ?? 'LSL';
+  const currency = CURRENCY_CODE;
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     const list = sales.data ?? [];

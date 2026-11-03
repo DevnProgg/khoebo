@@ -194,7 +194,7 @@ export default function ProductFormScreen() {
                 {name.trim() || 'Product name'}
               </Text>
               <Text style={styles.previewMeta}>
-                {sku.trim() || 'SKU'} · {business.currency} {numberOrZero(unitPrice).toFixed(2)}
+                {sku.trim() || 'SKU'} · LSL {numberOrZero(unitPrice).toFixed(2)}
               </Text>
             </View>
           </Card>
@@ -235,7 +235,7 @@ export default function ProductFormScreen() {
 
           <View style={styles.row}>
             <TextField
-              label={`Selling price (${business.currency})`}
+              label="Selling price (LSL)"
               placeholder="0.00"
               value={unitPrice}
               onChangeText={setUnitPrice}
@@ -244,7 +244,7 @@ export default function ProductFormScreen() {
               containerStyle={styles.flex}
             />
             <TextField
-              label={`Cost price (${business.currency})`}
+              label="Cost price (LSL)"
               placeholder="0.00"
               value={costPrice}
               onChangeText={setCostPrice}
