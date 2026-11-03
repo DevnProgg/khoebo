@@ -24,6 +24,7 @@ import { api } from '../../lib/api';
 import { formatDate, formatMoney, relativeDay, titleCase, toNumber } from '../../lib/format';
 import { colors, radius, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
+import { useLanguage } from '../../providers/LanguageProvider';
 import type { Account, JournalEntry } from '../../lib/types';
 
 type Tab = 'journal' | 'expenses';
@@ -31,6 +32,7 @@ type Tab = 'journal' | 'expenses';
 export default function BookkeepingScreen() {
   const router = useRouter();
   const { business } = useAuth();
+  const { t } = useLanguage();
   const { canManage } = useBusinessRole();
   const [tab, setTab] = useState<Tab>('journal');
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -72,8 +74,8 @@ export default function BookkeepingScreen() {
   return (
     <Screen refreshing={refreshing} onRefresh={refresh}>
       <Header
-        title="Bookkeeping"
-        subtitle="Every transaction, neatly recorded."
+        title={t('bookkeeping')}
+        subtitle={t('bookkeepingSubtitle')}
         right={
           canManage ? (
             <IconButton
@@ -95,8 +97,8 @@ export default function BookkeepingScreen() {
           setExpanded(null);
         }}
         options={[
-          { label: 'Journal', value: 'journal' },
-          { label: 'Expenses', value: 'expenses' },
+          { label: t('journal'), value: 'journal' },
+          { label: t('expenses'), value: 'expenses' },
         ]}
       />
 
@@ -106,14 +108,14 @@ export default function BookkeepingScreen() {
             <View style={styles.summaryIcon}>
               <Ionicons name="book-outline" size={18} color={colors.primary} />
             </View>
-            <Text style={styles.summaryLabel}>Entries</Text>
+            <Text style={styles.summaryLabel}>{t('entries')}</Text>
             <Text style={styles.summaryValue}>{journal.data?.length ?? '—'}</Text>
           </Card>
           <Card style={styles.summaryCard}>
             <View style={[styles.summaryIcon, { backgroundColor: colors.warningSoft }]}>
               <Ionicons name="receipt-outline" size={18} color={colors.warning} />
             </View>
-            <Text style={styles.summaryLabel}>Expenses</Text>
+            <Text style={styles.summaryLabel}>{t('expenses')}</Text>
             <Text style={styles.summaryValue}>
               {expenses.data ? formatMoney(totalExpenses, currency, true) : '—'}
             </Text>
@@ -123,7 +125,7 @@ export default function BookkeepingScreen() {
 
       {tab === 'journal' ? (
         <>
-          <SectionHeader title="Journal entries" />
+          <SectionHeader title={t('journalEntries')} />
           {journal.isLoading ? (
             <LoadingView />
           ) : journal.isError ? (

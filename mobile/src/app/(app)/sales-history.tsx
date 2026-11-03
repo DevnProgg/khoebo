@@ -22,6 +22,7 @@ import { api } from '../../lib/api';
 import { formatDateTime, formatMoney, toNumber, titleCase } from '../../lib/format';
 import { colors, radius, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
+import { useLanguage } from '../../providers/LanguageProvider';
 import type { SaleStatus } from '../../lib/types';
 
 type Filter = 'all' | SaleStatus;
@@ -29,6 +30,7 @@ type Filter = 'all' | SaleStatus;
 export default function SalesHistoryScreen() {
   const router = useRouter();
   const { business } = useAuth();
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
 
@@ -59,16 +61,16 @@ export default function SalesHistoryScreen() {
 
   return (
     <Screen refreshing={sales.isRefetching} onRefresh={() => sales.refetch()}>
-      <Header title="Sales history" subtitle="Every sale, refund and receipt." />
+      <Header title={t('salesHistory')} subtitle={t('salesHistorySubtitle')} />
 
       <Reveal>
         <View style={styles.summaryRow}>
           <Card style={styles.summaryCard}>
-            <Text style={styles.summaryLabel}>Completed</Text>
+            <Text style={styles.summaryLabel}>{t('completed')}</Text>
             <Text style={styles.summaryValue}>{completed.length}</Text>
           </Card>
           <Card style={styles.summaryCard}>
-            <Text style={styles.summaryLabel}>Revenue</Text>
+            <Text style={styles.summaryLabel}>{t('revenue')}</Text>
             <Text style={styles.summaryValue}>{formatMoney(revenue, currency, true)}</Text>
           </Card>
         </View>
@@ -79,9 +81,9 @@ export default function SalesHistoryScreen() {
           value={filter}
           onChange={setFilter}
           options={[
-            { label: 'All', value: 'all' },
-            { label: 'Completed', value: 'completed' },
-            { label: 'Refunded', value: 'refunded' },
+            { label: t('all'), value: 'all' },
+            { label: t('completed'), value: 'completed' },
+            { label: t('refunded'), value: 'refunded' },
           ]}
           style={styles.flex}
         />
@@ -90,14 +92,14 @@ export default function SalesHistoryScreen() {
       <View style={styles.search}>
         <TextField
           icon="search-outline"
-          placeholder="Search reference or customer"
+          placeholder={t('searchReference')}
           value={search}
           onChangeText={setSearch}
           autoCapitalize="none"
         />
       </View>
 
-      <SectionHeader title={`${filtered.length} ${filtered.length === 1 ? 'sale' : 'sales'}`} />
+      <SectionHeader title={`${filtered.length} ${filtered.length === 1 ? t('sale') : t('salesPlural')}`} />
 
       {sales.isLoading ? (
         <LoadingView />
@@ -134,7 +136,7 @@ export default function SalesHistoryScreen() {
                     {formatDateTime(sale.created_at)}
                   </Text>
                   <Badge
-                    label={sale.status === 'completed' ? 'Paid' : titleCase(sale.status)}
+                    label={sale.status === 'completed' ? t('paid') : titleCase(sale.status)}
                     tone={sale.status === 'completed' ? 'success' : 'warning'}
                   />
                 </View>
@@ -145,13 +147,13 @@ export default function SalesHistoryScreen() {
       ) : (
         <EmptyState
           icon="receipt-outline"
-          title={search ? 'No matching sales' : 'No sales here yet'}
+          title={search ? t('noMatchingSales') : t('noSalesHere')}
           body={
             search
               ? 'Try a different reference or customer name.'
               : 'Sales you record will appear here with their receipts.'
           }
-          actionLabel={!search ? 'Make a sale' : undefined}
+          actionLabel={!search ? t('makeSale') : undefined}
           onAction={!search ? () => router.push('/(app)/(tabs)/sell') : undefined}
         />
       )}

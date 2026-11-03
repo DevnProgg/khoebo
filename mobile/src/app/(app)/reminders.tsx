@@ -24,6 +24,7 @@ import { dueLabel, formatDateTime, titleCase } from '../../lib/format';
 import { colors, radius, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
 import { useToast } from '../../providers/ToastProvider';
+import { useLanguage } from '../../providers/LanguageProvider';
 import type { Reminder } from '../../lib/types';
 
 type Tab = 'due' | 'all';
@@ -40,6 +41,7 @@ export default function RemindersScreen() {
   const queryClient = useQueryClient();
   const toast = useToast();
   const { business } = useAuth();
+  const { t } = useLanguage();
   const [tab, setTab] = useState<Tab>('due');
   const [selected, setSelected] = useState<Reminder | null>(null);
 
@@ -109,14 +111,14 @@ export default function RemindersScreen() {
   return (
     <Screen refreshing={refreshing} onRefresh={refresh}>
       <Header
-        title="Reminders"
-        subtitle="A little nudge at the right time."
+        title={t('reminders')}
+        subtitle={t('remindersSubtitle')}
         right={
           <IconButton
             icon="add"
             tone="primary"
             onPress={() => router.push('/(app)/reminder-form')}
-            accessibilityLabel="Add reminder"
+            accessibilityLabel={t('reminders')}
           />
         }
       />
@@ -125,14 +127,14 @@ export default function RemindersScreen() {
         value={tab}
         onChange={setTab}
         options={[
-          { label: `Due${dueList.length ? ` · ${dueList.length}` : ''}`, value: 'due' },
-          { label: 'All reminders', value: 'all' },
+          { label: `${t('due')}${dueList.length ? ` · ${dueList.length}` : ''}`, value: 'due' },
+          { label: t('allReminders'), value: 'all' },
         ]}
       />
 
       {tab === 'due' ? (
         <>
-          <SectionHeader title="Needs your attention" />
+          <SectionHeader title={t('needsAttention')} />
           {due.isLoading ? (
             <LoadingView />
           ) : due.isError ? (
@@ -162,7 +164,7 @@ export default function RemindersScreen() {
                             {dueLabel(reminder.next_due_at)}
                           </Text>
                         </View>
-                        {item.overdue ? <Badge label="Overdue" tone="danger" /> : null}
+                        {item.overdue ? <Badge label={t('overdue')} tone="danger" /> : null}
                       </View>
 
                       {reminder.message ? (
@@ -182,7 +184,7 @@ export default function RemindersScreen() {
                         <View style={styles.context}>
                           <Ionicons name="cart-outline" size={14} color={colors.success} />
                           <Text style={styles.contextText}>
-                            {context.sales_recorded_today} sales recorded today
+                            {context.sales_recorded_today} {t('sales').toLowerCase()} recorded today
                           </Text>
                         </View>
                       ) : null}

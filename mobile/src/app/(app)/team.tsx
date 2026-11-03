@@ -24,6 +24,7 @@ import { titleCase } from '../../lib/format';
 import { colors, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
 import { useToast } from '../../providers/ToastProvider';
+import { useLanguage } from '../../providers/LanguageProvider';
 import type { Member, MemberRole } from '../../lib/types';
 
 export default function TeamScreen() {
@@ -31,6 +32,7 @@ export default function TeamScreen() {
   const queryClient = useQueryClient();
   const toast = useToast();
   const { business, user } = useAuth();
+  const { t } = useLanguage();
   const roleInfo = useBusinessRole();
   const [selected, setSelected] = useState<Member | null>(null);
 
@@ -119,15 +121,15 @@ export default function TeamScreen() {
   return (
     <Screen refreshing={members.isRefetching} onRefresh={() => members.refetch()}>
       <Header
-        title="Team"
-        subtitle="Everyone with access to this business."
+        title={t('team')}
+        subtitle={t('teamSubtitle')}
         right={
           roleInfo.canManage ? (
             <IconButton
               icon="person-add-outline"
               tone="primary"
               onPress={() => router.push('/(app)/member-form')}
-              accessibilityLabel="Add member"
+              accessibilityLabel={t('addMember')}
             />
           ) : undefined
         }
@@ -141,14 +143,14 @@ export default function TeamScreen() {
           <View style={styles.flex}>
             <Text style={styles.businessName}>{business?.name}</Text>
             <Text style={styles.businessMeta}>
-              {members.data?.length ?? 0} {members.data?.length === 1 ? 'member' : 'members'}
+              {members.data?.length ?? 0} {t('members').toLowerCase()}
             </Text>
           </View>
           {roleInfo.role ? <Badge label={titleCase(roleInfo.role)} tone="primary" /> : null}
         </Card>
       </Reveal>
 
-      <SectionHeader title="Members" />
+      <SectionHeader title={t('members')} />
 
       {members.isLoading ? (
         <LoadingView />
@@ -173,7 +175,7 @@ export default function TeamScreen() {
                     <Text style={styles.memberName} numberOfLines={1}>
                       {member.full_name}
                     </Text>
-                    {isSelf ? <Badge label="You" tone="neutral" /> : null}
+                    {isSelf ? <Badge label={t('you')} tone="neutral" /> : null}
                   </View>
                   <Text style={styles.memberEmail} numberOfLines={1}>
                     {member.email}

@@ -36,6 +36,7 @@ import { formatMoney, formatNumber, toNumber } from '../../../lib/format';
 import { colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useToast } from '../../../providers/ToastProvider';
+import { useLanguage } from '../../../providers/LanguageProvider';
 import type { Product, StockMovementType } from '../../../lib/types';
 
 const movementLabels: Record<StockMovementType, string> = {
@@ -50,6 +51,7 @@ export default function StockScreen() {
   const queryClient = useQueryClient();
   const toast = useToast();
   const { business } = useAuth();
+  const { t } = useLanguage();
   const { canManage } = useBusinessRole();
   const [search, setSearch] = useState('');
   const [lowOnly, setLowOnly] = useState(false);
@@ -127,7 +129,7 @@ export default function StockScreen() {
       setQuantity('');
       setUnitCost('');
       setReason('');
-      toast.show('Stock updated');
+      toast.show(t('saveStockChange'));
     },
     onError: (error: Error) => toast.show(error.message, 'error'),
   });
@@ -186,9 +188,9 @@ export default function StockScreen() {
       <Screen bottomTab>
         <EmptyState
           icon="storefront-outline"
-          title="Create a business first"
-          body="Products, stock levels and inventory value will live here."
-          actionLabel="Create business"
+          title={t('createBusinessFirst')}
+          body={t('stockSubtitle')}
+          actionLabel={t('createBusiness')}
           onAction={() => router.push('/(app)/business-form?mode=create')}
         />
       </Screen>
@@ -199,8 +201,8 @@ export default function StockScreen() {
     <Screen bottomTab refreshing={products.isRefetching} onRefresh={() => products.refetch()}>
       <View style={styles.header}>
         <View style={styles.flex}>
-          <Text style={styles.title}>Stock</Text>
-          <Text style={styles.subtitle}>Know what you have, at a glance.</Text>
+          <Text style={styles.title}>{t('stock')}</Text>
+          <Text style={styles.subtitle}>{t('stockSubtitle')}</Text>
         </View>
         {canManage ? (
           <IconButton
@@ -214,17 +216,17 @@ export default function StockScreen() {
 
       <View style={styles.summary}>
         <View style={styles.summaryItem}>
-          <Text style={styles.summaryLabel}>Products</Text>
+          <Text style={styles.summaryLabel}>{t('products')}</Text>
           <Text style={styles.summaryValue}>{all.length}</Text>
         </View>
         <View style={styles.summaryDivider} />
         <View style={styles.summaryItem}>
-          <Text style={styles.summaryLabel}>Units</Text>
+          <Text style={styles.summaryLabel}>{t('units')}</Text>
           <Text style={styles.summaryValue}>{formatNumber(totalUnits, totalUnits % 1 ? 2 : 0)}</Text>
         </View>
         <View style={styles.summaryDivider} />
         <View style={styles.summaryItem}>
-          <Text style={styles.summaryLabel}>Stock value</Text>
+          <Text style={styles.summaryLabel}>{t('stockValue')}</Text>
           <Text style={styles.summaryValue}>{formatMoney(totalValue, currency, true)}</Text>
         </View>
       </View>
@@ -232,7 +234,7 @@ export default function StockScreen() {
       <View style={styles.searchRow}>
         <TextField
           icon="search-outline"
-          placeholder="Search stock"
+          placeholder={t('searchStock')}
           value={search}
           onChangeText={setSearch}
           autoCapitalize="none"
@@ -241,16 +243,16 @@ export default function StockScreen() {
       </View>
 
       <View style={styles.filters}>
-        <Chip label="All products" selected={!lowOnly} onPress={() => setLowOnly(false)} />
+        <Chip label={t('allProducts')} selected={!lowOnly} onPress={() => setLowOnly(false)} />
         <Chip
-          label={`Low stock${lowCount ? ` · ${lowCount}` : ''}`}
+          label={`${t('lowStock')}${lowCount ? ` · ${lowCount}` : ''}`}
           selected={lowOnly}
           onPress={() => setLowOnly(true)}
           icon="alert-circle-outline"
         />
       </View>
 
-      <SectionHeader title={lowOnly ? 'Running low' : 'All products'} />
+      <SectionHeader title={lowOnly ? t('runningLow') : t('allProducts')} />
 
       {products.isLoading ? (
         <View style={styles.loading}>
@@ -367,7 +369,7 @@ export default function StockScreen() {
             <View style={styles.sheetHandle} />
             <View style={styles.sheetHeader}>
               <View style={styles.flex}>
-                <Text style={styles.sheetTitle}>Adjust stock</Text>
+                <Text style={styles.sheetTitle}>{t('adjustStock')}</Text>
                 <Text style={styles.sheetSubtitle}>{adjusting?.name}</Text>
               </View>
               <IconButton icon="close" onPress={() => setAdjusting(null)} />
@@ -375,7 +377,7 @@ export default function StockScreen() {
 
             <View style={styles.sheetContent}>
               <View style={styles.currentStock}>
-                <Text style={styles.currentLabel}>Current stock</Text>
+                <Text style={styles.currentLabel}>{t('currentStock')}</Text>
                 <Text style={styles.currentValue}>
                   {formatNumber(adjusting?.stock_quantity, 2)}
                 </Text>
@@ -400,7 +402,7 @@ export default function StockScreen() {
               </View>
 
               <TextField
-                label={movementType === 'adjustment' ? 'New stock level' : 'Quantity'}
+                    label={movementType === 'adjustment' ? t('stockValue') : t('quantity')}
                 placeholder="0"
                 value={quantity}
                 onChangeText={setQuantity}
@@ -409,8 +411,8 @@ export default function StockScreen() {
               />
               {movementType === 'in' ? (
                 <TextField
-                  label="Unit cost"
-                  placeholder="Optional"
+                    label={t('unitCost')}
+                    placeholder={t('optional')}
                   value={unitCost}
                   onChangeText={setUnitCost}
                   keyboardType="decimal-pad"
@@ -418,14 +420,14 @@ export default function StockScreen() {
                 />
               ) : null}
               <TextField
-                label="Reason"
-                placeholder="Optional note"
+                label={t('reason')}
+                placeholder={t('optional')}
                 value={reason}
                 onChangeText={setReason}
                 icon="create-outline"
               />
               <Button
-                title="Save stock change"
+                title={t('saveStockChange')}
                 icon="checkmark-circle-outline"
                 onPress={submitMovement}
                 loading={movement.isPending}

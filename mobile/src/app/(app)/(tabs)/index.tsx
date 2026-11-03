@@ -33,22 +33,18 @@ import {
 } from '../../../lib/format';
 import { colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
-
-const quickActions: {
-  title: string;
-  subtitle: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  href: string;
-}[] = [
-  { title: 'New sale', subtitle: 'Take an order', icon: 'cart-outline', href: '/(app)/(tabs)/sell' },
-  { title: 'Add stock', subtitle: 'New product', icon: 'cube-outline', href: '/(app)/product-form' },
-  { title: 'Add expense', subtitle: 'Record spending', icon: 'receipt-outline', href: '/(app)/expense-form' },
-  { title: 'Insights', subtitle: 'See your trends', icon: 'bar-chart-outline', href: '/(app)/analytics' },
-];
+import { useLanguage } from '../../../providers/LanguageProvider';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { user, business } = useAuth();
+  const { t } = useLanguage();
+  const quickActions = [
+    { title: t('newSale'), subtitle: t('takeAnOrder'), icon: 'cart-outline' as const, href: '/(app)/(tabs)/sell' },
+    { title: t('addStock'), subtitle: t('newProduct'), icon: 'cube-outline' as const, href: '/(app)/product-form' },
+    { title: t('addExpense'), subtitle: t('recordSpending'), icon: 'receipt-outline' as const, href: '/(app)/expense-form' },
+    { title: t('analytics'), subtitle: t('seeYourTrends'), icon: 'bar-chart-outline' as const, href: '/(app)/analytics' },
+  ];
   const start = startOfMonthISO();
   const end = todayISO();
 
@@ -128,13 +124,13 @@ export default function HomeScreen() {
               <View style={styles.setupIcon}>
                 <Ionicons name="storefront" size={30} color={colors.primary} />
               </View>
-              <Text style={styles.setupTitle}>Set up your business</Text>
+              <Text style={styles.setupTitle}>{t('createBusinessFirst')}</Text>
               <Text style={styles.setupBody}>
                 Add your business details once, then start selling, tracking stock and keeping
                 clean books.
               </Text>
               <Button
-                title="Create my business"
+                title={t('createBusiness')}
                 icon="arrow-forward"
                 onPress={() => router.push('/(app)/business-form?mode=create')}
                 style={styles.setupButton}
@@ -142,7 +138,7 @@ export default function HomeScreen() {
             </Card>
           </Reveal>
 
-          <SectionHeader title="Everything in one place" />
+          <SectionHeader title={t('everythingInOnePlace')} />
           <Card padded={false}>
             {[
               { icon: 'cart-outline' as const, title: 'Fast sales', body: 'Take orders and get paid in seconds.' },
@@ -175,17 +171,17 @@ export default function HomeScreen() {
             >
               <View style={styles.heroTop}>
                 <View style={styles.flex}>
-                  <Text style={styles.heroLabel}>THIS MONTH</Text>
+                  <Text style={styles.heroLabel}>{t('month').toUpperCase()}</Text>
                   <Text style={styles.heroAmount} numberOfLines={1} adjustsFontSizeToFit>
                     {formatMoney(data?.revenue, currency)}
                   </Text>
                   <Text style={styles.heroCaption}>
-                    {data?.sales_count ?? 0} sales · revenue
+                    {data?.sales_count ?? 0} {t('sales').toLowerCase()} · {t('revenue').toLowerCase()}
                   </Text>
                 </View>
                 <View style={styles.livePill}>
                   <Ionicons name="pulse" size={13} color={colors.white} />
-                  <Text style={styles.liveText}>Live</Text>
+                  <Text style={styles.liveText}>{t('active')}</Text>
                 </View>
               </View>
 
@@ -200,21 +196,21 @@ export default function HomeScreen() {
                   </View>
                   <View style={styles.heroStats}>
                     <View style={styles.heroStat}>
-                      <Text style={styles.heroStatLabel}>Today</Text>
+                      <Text style={styles.heroStatLabel}>{t('today')}</Text>
                       <Text style={styles.heroStatValue}>
                         {formatMoney(todayRevenue, currency, true)}
                       </Text>
                     </View>
                     <View style={styles.heroDivider} />
                     <View style={styles.heroStat}>
-                      <Text style={styles.heroStatLabel}>Net profit</Text>
+                      <Text style={styles.heroStatLabel}>{t('netProfit')}</Text>
                       <Text style={styles.heroStatValue}>
                         {formatMoney(data?.net_profit, currency, true)}
                       </Text>
                     </View>
                     <View style={styles.heroDivider} />
                     <View style={styles.heroStat}>
-                      <Text style={styles.heroStatLabel}>Avg. sale</Text>
+                      <Text style={styles.heroStatLabel}>{t('averageSale')}</Text>
                       <Text style={styles.heroStatValue}>
                         {formatMoney(data?.average_sale_value, currency, true)}
                       </Text>
@@ -231,7 +227,7 @@ export default function HomeScreen() {
             </Text>
           ) : null}
 
-          <SectionHeader title="Quick actions" />
+          <SectionHeader title={t('quickActions')} />
           <View style={styles.grid}>
             {quickActions.map((action, index) => (
               <Reveal key={action.title} delay={60 + index * 40} style={styles.gridItem}>
@@ -277,8 +273,8 @@ export default function HomeScreen() {
           {dueItems.length ? (
             <>
               <SectionHeader
-                title="Reminders"
-                actionLabel="See all"
+                title={t('reminders')}
+                actionLabel={t('all')}
                 onAction={() => router.push('/(app)/reminders')}
               />
               <ScrollView
@@ -306,13 +302,13 @@ export default function HomeScreen() {
                           color={colors.primary}
                         />
                       </View>
-                      {item.overdue ? <Badge label="Overdue" tone="danger" /> : null}
+                      {item.overdue ? <Badge label={t('overdue')} tone="danger" /> : null}
                     </View>
                     <Text style={styles.reminderTitle} numberOfLines={2}>
                       {item.reminder.title}
                     </Text>
                     <Text style={styles.reminderDue}>
-                      {item.overdue ? 'Needs attention' : relativeDay(item.reminder.next_due_at)}
+                      {item.overdue ? t('needsAttention') : relativeDay(item.reminder.next_due_at)}
                     </Text>
                   </ScalePressable>
                 ))}
@@ -321,13 +317,13 @@ export default function HomeScreen() {
           ) : null}
 
           <SectionHeader
-            title="Recent sales"
-            actionLabel={sales.length ? 'See all' : undefined}
+            title={t('recentSales')}
+            actionLabel={sales.length ? t('all') : undefined}
             onAction={() => router.push('/(app)/sales-history')}
           />
           <Card padded={false}>
             {recentSales.isLoading ? (
-              <LoadingView label="Loading sales" />
+              <LoadingView label={t('sales')} />
             ) : sales.length ? (
               sales.map((sale, index) => (
                 <ScalePressable
@@ -350,7 +346,7 @@ export default function HomeScreen() {
                       {formatMoney(sale.total, currency)}
                     </Text>
                     <Badge
-                      label={sale.status === 'completed' ? 'Paid' : sale.status}
+                      label={sale.status === 'completed' ? t('paid') : sale.status}
                       tone={sale.status === 'completed' ? 'success' : 'warning'}
                     />
                   </View>
@@ -360,9 +356,9 @@ export default function HomeScreen() {
               <EmptyState
                 compact
                 icon="receipt-outline"
-                title="No sales yet"
-                body="Your first sale will show up here."
-                actionLabel="Make a sale"
+                title={t('noSalesYet')}
+                body={t('noSalesHere')}
+                actionLabel={t('makeSale')}
                 onAction={() => router.push('/(app)/(tabs)/sell')}
               />
             )}
@@ -374,7 +370,7 @@ export default function HomeScreen() {
                 <Ionicons name="sparkles" size={18} color={colors.primary} />
               </View>
               <View style={styles.flex}>
-                <Text style={styles.tipTitle}>Keep the momentum</Text>
+                <Text style={styles.tipTitle}>{t('keepMomentum')}</Text>
                 <Text style={styles.tipBody}>
                   {data && toNumber(data.sales_count) > 0
                     ? 'Your books update automatically with every sale. Nice and tidy.'

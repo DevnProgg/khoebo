@@ -34,6 +34,7 @@ import { formatMoney, formatNumber, toNumber } from '../../../lib/format';
 import { colors, radius, shadow, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useToast } from '../../../providers/ToastProvider';
+import { useLanguage } from '../../../providers/LanguageProvider';
 import type { PaymentMethod, Product, Sale } from '../../../lib/types';
 
 interface CartLine {
@@ -41,19 +42,19 @@ interface CartLine {
   quantity: number;
 }
 
-const paymentMethods: { label: string; value: PaymentMethod; icon: keyof typeof Ionicons.glyphMap }[] = [
-  { label: 'Cash', value: 'cash', icon: 'cash-outline' },
-  { label: 'Card', value: 'card', icon: 'card-outline' },
-  { label: 'Transfer', value: 'transfer', icon: 'swap-horizontal-outline' },
-  { label: 'Other', value: 'other', icon: 'ellipsis-horizontal-outline' },
-];
-
 export default function SellScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const toast = useToast();
   const { business } = useAuth();
+  const { t } = useLanguage();
+  const paymentMethods = [
+    { label: t('cash'), value: 'cash' as PaymentMethod, icon: 'cash-outline' as const },
+    { label: t('card'), value: 'card' as PaymentMethod, icon: 'card-outline' as const },
+    { label: t('transfer'), value: 'transfer' as PaymentMethod, icon: 'swap-horizontal-outline' as const },
+    { label: t('other'), value: 'other' as PaymentMethod, icon: 'ellipsis-horizontal-outline' as const },
+  ];
   const [search, setSearch] = useState('');
   const [cart, setCart] = useState<CartLine[]>([]);
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -96,7 +97,7 @@ export default function SellScreen() {
       const existing = current.find((line) => line.product.id === product.id);
       if (existing) {
         if (existing.quantity >= stock) {
-          toast.show('No more stock available for this item.', 'error');
+          toast.show(t('noMoreStock'), 'error');
           return current;
         }
         return current.map((line) =>
@@ -168,9 +169,9 @@ export default function SellScreen() {
       <Screen bottomTab>
         <EmptyState
           icon="storefront-outline"
-          title="Create a business first"
-          body="Once your business is set up, products and sales will live here."
-          actionLabel="Create business"
+          title={t('createBusinessFirst')}
+          body={t('stockSubtitle')}
+          actionLabel={t('createBusiness')}
           onAction={() => router.push('/(app)/business-form?mode=create')}
         />
       </Screen>
@@ -181,13 +182,13 @@ export default function SellScreen() {
     <Screen scroll={false} contentContainerStyle={uiStyles.flex}>
       <View style={styles.header}>
         <View style={styles.flex}>
-          <Text style={styles.title}>Sell</Text>
-          <Text style={styles.subtitle}>Tap a product to add it to the cart.</Text>
+          <Text style={styles.title}>{t('sell')}</Text>
+          <Text style={styles.subtitle}>{t('sellSubtitle')}</Text>
         </View>
         <IconButton
           icon="time-outline"
           onPress={() => router.push('/(app)/sales-history')}
-          accessibilityLabel="Sales history"
+          accessibilityLabel={t('salesHistory')}
         />
       </View>
 

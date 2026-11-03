@@ -27,12 +27,14 @@ import {
 } from '../../lib/format';
 import { colors, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
+import { useLanguage } from '../../providers/LanguageProvider';
 
 type ReportTab = 'trial' | 'income' | 'inventory' | 'sales';
 type RangeKey = '7d' | '30d' | 'month';
 
 export default function ReportsScreen() {
   const { business } = useAuth();
+  const { t } = useLanguage();
   const [tab, setTab] = useState<ReportTab>('trial');
   const [range, setRange] = useState<RangeKey>('month');
   const end = todayISO();
@@ -71,16 +73,16 @@ export default function ReportsScreen() {
 
   return (
     <Screen refreshing={refreshing} onRefresh={refresh}>
-      <Header title="Reports" subtitle="The details behind your business." />
+      <Header title={t('reports')} subtitle={t('reportsSubtitle')} />
 
       <Segmented
         value={tab}
         onChange={setTab}
         options={[
-          { label: 'Trial', value: 'trial' },
-          { label: 'Income', value: 'income' },
-          { label: 'Inventory', value: 'inventory' },
-          { label: 'Sales', value: 'sales' },
+          { label: t('trial'), value: 'trial' },
+          { label: t('income'), value: 'income' },
+          { label: t('inventory'), value: 'inventory' },
+          { label: t('sales'), value: 'sales' },
         ]}
       />
 
@@ -90,9 +92,9 @@ export default function ReportsScreen() {
             value={range}
             onChange={setRange}
             options={[
-              { label: '7 days', value: '7d' },
-              { label: '30 days', value: '30d' },
-              { label: 'This month', value: 'month' },
+              { label: t('sevenDays'), value: '7d' },
+              { label: t('thirtyDays'), value: '30d' },
+              { label: t('thisMonth'), value: 'month' },
             ]}
             style={styles.flex}
           />
@@ -109,7 +111,7 @@ export default function ReportsScreen() {
             <Reveal>
               <Card style={styles.balanceCard}>
                 <View style={styles.flex}>
-                  <Text style={styles.balanceLabel}>Trial balance</Text>
+                  <Text style={styles.balanceLabel}>{t('trialBalance')}</Text>
                   <Text style={styles.balanceValue}>
                     {formatMoney(trial.data.total_debit, currency)}
                   </Text>
@@ -196,7 +198,7 @@ export default function ReportsScreen() {
               </Card>
             </Reveal>
 
-            <Text style={styles.groupTitle}>Revenue</Text>
+            <Text style={styles.groupTitle}>{t('revenue')}</Text>
             <Card padded={false}>
               {income.data.revenue.length ? (
                 income.data.revenue.map((line, index, list) => (
@@ -222,7 +224,7 @@ export default function ReportsScreen() {
               </View>
             </Card>
 
-            <Text style={styles.groupTitle}>Expenses</Text>
+            <Text style={styles.groupTitle}>{t('expenses')}</Text>
             <Card padded={false}>
               {income.data.expenses.length ? (
                 income.data.expenses.map((line, index, list) => (

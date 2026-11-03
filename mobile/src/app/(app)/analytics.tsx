@@ -29,12 +29,14 @@ import {
 } from '../../lib/format';
 import { colors, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
+import { useLanguage } from '../../providers/LanguageProvider';
 
 type RangeKey = 'today' | '7d' | '30d' | 'month';
 
 export default function AnalyticsScreen() {
   const router = useRouter();
   const { business } = useAuth();
+  const { t } = useLanguage();
   const [range, setRange] = useState<RangeKey>('month');
   const end = todayISO();
   const start = useMemo(() => {
@@ -58,21 +60,21 @@ export default function AnalyticsScreen() {
 
   return (
     <Screen refreshing={overview.isRefetching} onRefresh={() => overview.refetch()}>
-      <Header title="Analytics" subtitle="A clear view of how business is going." />
+      <Header title={t('analytics')} subtitle={t('analyticsSubtitle')} />
 
       <Segmented
         value={range}
         onChange={setRange}
         options={[
-          { label: 'Today', value: 'today' },
-          { label: '7 days', value: '7d' },
-          { label: '30 days', value: '30d' },
-          { label: 'Month', value: 'month' },
+          { label: t('today'), value: 'today' },
+          { label: t('sevenDays'), value: '7d' },
+          { label: t('thirtyDays'), value: '30d' },
+          { label: t('month'), value: 'month' },
         ]}
       />
 
       {overview.isLoading ? (
-        <LoadingView label="Reading your numbers" />
+        <LoadingView label={t('readingNumbers')} />
       ) : overview.isError ? (
         <ErrorState message={overview.error.message} onRetry={() => overview.refetch()} />
       ) : data ? (
@@ -83,7 +85,7 @@ export default function AnalyticsScreen() {
                 <View style={[styles.kpiIcon, { backgroundColor: colors.primarySoft }]}>
                   <Ionicons name="trending-up-outline" size={18} color={colors.primary} />
                 </View>
-                <Text style={styles.kpiLabel}>Revenue</Text>
+                <Text style={styles.kpiLabel}>{t('revenue')}</Text>
                 <Text style={styles.kpiValue} numberOfLines={1} adjustsFontSizeToFit>
                   {formatMoney(data.revenue, currency)}
                 </Text>
@@ -103,7 +105,7 @@ export default function AnalyticsScreen() {
                     color={netProfit >= 0 ? colors.success : colors.danger}
                   />
                 </View>
-                <Text style={styles.kpiLabel}>Net profit</Text>
+                <Text style={styles.kpiLabel}>{t('netProfit')}</Text>
                 <Text
                   style={[styles.kpiValue, { color: netProfit >= 0 ? colors.ink : colors.danger }]}
                   numberOfLines={1}
@@ -118,7 +120,7 @@ export default function AnalyticsScreen() {
                 <View style={[styles.kpiIcon, { backgroundColor: colors.primaryMist }]}>
                   <Ionicons name="cart-outline" size={18} color={colors.primary} />
                 </View>
-                <Text style={styles.kpiLabel}>Sales</Text>
+                <Text style={styles.kpiLabel}>{t('sales')}</Text>
                 <Text style={styles.kpiValue}>{formatNumber(data.sales_count)}</Text>
               </Card>
             </Reveal>
@@ -127,7 +129,7 @@ export default function AnalyticsScreen() {
                 <View style={[styles.kpiIcon, { backgroundColor: colors.primaryMist }]}>
                   <Ionicons name="receipt-outline" size={18} color={colors.primary} />
                 </View>
-                <Text style={styles.kpiLabel}>Average sale</Text>
+                <Text style={styles.kpiLabel}>{t('averageSale')}</Text>
                 <Text style={styles.kpiValue} numberOfLines={1} adjustsFontSizeToFit>
                   {formatMoney(data.average_sale_value, currency)}
                 </Text>
@@ -135,7 +137,7 @@ export default function AnalyticsScreen() {
             </Reveal>
           </View>
 
-          <SectionHeader title="Revenue trend" />
+          <SectionHeader title={t('revenueTrend')} />
           <Card>
             <View style={styles.chartHeader}>
               <View>
@@ -144,7 +146,7 @@ export default function AnalyticsScreen() {
                   {start === end ? 'Today' : `${start} to ${end}`}
                 </Text>
               </View>
-              <Badge label={`${data.sales_count} sales`} tone="primary" />
+              <Badge label={`${data.sales_count} ${t('sales').toLowerCase()}`} tone="primary" />
             </View>
             <View style={styles.chart}>
               <MiniBars
@@ -157,16 +159,16 @@ export default function AnalyticsScreen() {
             </View>
           </Card>
 
-          <SectionHeader title="Top products" />
+          <SectionHeader title={t('topProducts')} />
           <Card>
             {data.top_products.length ? (
               <TopProducts products={data.top_products} currency={currency} />
             ) : (
-              <Text style={styles.muted}>No product sales in this period yet.</Text>
+              <Text style={styles.muted}>{t('noProductSales')}</Text>
             )}
           </Card>
 
-          <SectionHeader title="Payment mix" />
+          <SectionHeader title={t('paymentMix')} />
           <Card>
             {payments.length ? (
               <View style={styles.payments}>
@@ -195,7 +197,7 @@ export default function AnalyticsScreen() {
                 <Ionicons name="cube-outline" size={20} color={colors.primary} />
               </View>
               <View style={styles.flex}>
-                <Text style={styles.inventoryLabel}>Stock on hand</Text>
+                <Text style={styles.inventoryLabel}>{t('stockOnHand')}</Text>
                 <Text style={styles.inventoryValue}>
                   {formatMoney(data.inventory_value, currency)}
                 </Text>
@@ -237,7 +239,7 @@ export default function AnalyticsScreen() {
               </Text>
             </Card>
             <Card style={styles.miniCard}>
-              <Text style={styles.miniLabel}>Expenses</Text>
+              <Text style={styles.miniLabel}>{t('expenses')}</Text>
               <Text style={styles.miniValue}>{formatMoney(data.expenses, currency, true)}</Text>
             </Card>
           </View>

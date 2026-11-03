@@ -19,23 +19,25 @@ import { useBusinessRole } from '../../../hooks/useBusinessRole';
 import { titleCase } from '../../../lib/format';
 import { colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
+import { useLanguage } from '../../../providers/LanguageProvider';
 
 export default function MoreScreen() {
   const router = useRouter();
   const { user, business, businesses, signOut } = useAuth();
   const { role, canManage } = useBusinessRole();
+  const { t } = useLanguage();
 
   const confirmSignOut = () => {
-    Alert.alert('Sign out?', 'You can sign back in at any time.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign out', style: 'destructive', onPress: () => void signOut() },
+    Alert.alert(t('signOutPrompt'), t('signOutAgain'), [
+      { text: t('cancel'), style: 'cancel' },
+      { text: t('signOut'), style: 'destructive', onPress: () => void signOut() },
     ]);
   };
 
   return (
     <Screen bottomTab>
       <View style={styles.header}>
-        <Text style={styles.title}>More</Text>
+        <Text style={styles.title}>{t('more')}</Text>
         <Badge label="Khoebo" tone="primary" icon="sparkles" />
       </View>
 
@@ -53,7 +55,7 @@ export default function MoreScreen() {
               {role ? <Badge label={titleCase(role)} tone="primary" /> : null}
               {business ? (
                 <Badge
-                  label={`${businesses.length} ${businesses.length === 1 ? 'business' : 'businesses'}`}
+                  label={`${businesses.length} ${businesses.length === 1 ? t('businessCount') : t('businessesCount')}`}
                   tone="neutral"
                 />
               ) : null}
@@ -69,8 +71,8 @@ export default function MoreScreen() {
               <Ionicons name="storefront-outline" size={24} color={colors.primary} />
             </View>
             <View style={styles.flex}>
-              <Text style={styles.setupTitle}>No business yet</Text>
-              <Text style={styles.setupBody}>Create one to unlock sales, stock and books.</Text>
+              <Text style={styles.setupTitle}>{t('noBusinessYet')}</Text>
+              <Text style={styles.setupBody}>{t('createBusinessFirst')}</Text>
             </View>
             <ScalePressable
               onPress={() => router.push('/(app)/business-form?mode=create')}
@@ -86,47 +88,47 @@ export default function MoreScreen() {
         <BusinessSwitcher />
       </View>
 
-      <SectionHeader title="Insights" />
+      <SectionHeader title={t('insights')} />
       <Card padded={false}>
         <MenuRow
           icon="bar-chart-outline"
-          title="Analytics"
-          subtitle="Revenue, profit and top products"
+          title={t('analytics')}
+          subtitle={t('insightsSubtitle')}
           onPress={() => router.push('/(app)/analytics')}
         />
         <MenuRow
           icon="document-text-outline"
-          title="Reports"
-          subtitle="Trial balance, income and inventory"
+          title={t('reports')}
+          subtitle={t('reportsSubtitleShort')}
           onPress={() => router.push('/(app)/reports')}
         />
         <MenuRow
           icon="receipt-outline"
-          title="Sales history"
-          subtitle="Every sale and refund"
+          title={t('salesHistory')}
+          subtitle={t('salesHistoryShort')}
           onPress={() => router.push('/(app)/sales-history')}
           last
         />
       </Card>
 
-      <SectionHeader title="Operations" />
+      <SectionHeader title={t('operations')} />
       <Card padded={false}>
         <MenuRow
           icon="book-outline"
-          title="Bookkeeping"
-          subtitle="Journal entries and expenses"
+          title={t('bookkeeping')}
+          subtitle={t('bookkeepingSubtitleShort')}
           onPress={() => router.push('/(app)/bookkeeping')}
         />
         <MenuRow
           icon="alarm-outline"
-          title="Reminders"
-          subtitle="Stay on top of the day"
+          title={t('reminders')}
+          subtitle={t('remindersSubtitleShort')}
           onPress={() => router.push('/(app)/reminders')}
         />
         <MenuRow
           icon="people-outline"
-          title="Team"
-          subtitle={canManage ? 'Manage members and roles' : 'See who is on your team'}
+          title={t('team')}
+          subtitle={canManage ? t('manageMembers') : t('seeTeam')}
           onPress={() => router.push('/(app)/team')}
           last
         />
@@ -137,7 +139,7 @@ export default function MoreScreen() {
         <MenuRow
           icon="settings-outline"
           title="Settings"
-          subtitle="Personal info, business and security"
+          subtitle={t('personalBusinessSecurity')}
           onPress={() => router.push('/(app)/settings')}
         />
         <MenuRow
@@ -147,13 +149,13 @@ export default function MoreScreen() {
           onPress={() =>
             Alert.alert(
               'Khoebo',
-              'Simple, connected business management. Sell, track stock and keep clean books.',
+              t('aboutDescription'),
             )
           }
         />
         <MenuRow
           icon="log-out-outline"
-          title="Sign out"
+          title={t('signOut')}
           tone="danger"
           onPress={confirmSignOut}
           right={<View />}
@@ -161,7 +163,7 @@ export default function MoreScreen() {
         />
       </Card>
 
-      <Text style={styles.footer}>Khoebo · Made for small businesses</Text>
+      <Text style={styles.footer}>Khoebo · {t('madeForSmallBusinessesShort')}</Text>
     </Screen>
   );
 }
