@@ -21,6 +21,7 @@ import { titleCase } from '../../../lib/format';
 import { colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useToast } from '../../../providers/ToastProvider';
+import { useLanguage } from '../../../providers/LanguageProvider';
 
 export default function BusinessSettingsScreen() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export default function BusinessSettingsScreen() {
     selectBusiness,
   } = useAuth();
   const { role, isOwner, canManage } = useBusinessRole();
+  const { t } = useLanguage();
   const [name, setName] = useState(business?.name ?? '');
   const currency = 'LSL';
   const [saving, setSaving] = useState(false);
@@ -90,7 +92,7 @@ export default function BusinessSettingsScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <Screen>
-        <Header title="Business profile" subtitle="The details behind your business." />
+        <Header title={t('businessProfile')} subtitle={t('businessDetails')} />
 
         {business ? (
           <>
@@ -110,26 +112,26 @@ export default function BusinessSettingsScreen() {
               </Card>
             </Reveal>
 
-            <SectionHeader title="Business details" />
+            <SectionHeader title={t('businessDetails')} />
             {canManage ? (
               <View style={styles.form}>
                 <TextField
-                  label="Business name"
+                  label={t('businessName')}
                   value={name}
                   onChangeText={setName}
-                  placeholder="Your business"
+                  placeholder={t('yourBusiness')}
                   icon="storefront-outline"
                 />
                 <View style={styles.currencyWrap}>
                   <TextField
-                    label="Currency code"
+                    label={t('currencyCode')}
                     value={currency}
                     editable={false}
                     icon="cash-outline"
                   />
                 </View>
                 <Button
-                  title="Save changes"
+                  title={t('saveChanges')}
                   icon="checkmark-circle-outline"
                   onPress={save}
                   loading={saving}
@@ -138,14 +140,14 @@ export default function BusinessSettingsScreen() {
               </View>
             ) : (
               <Card>
-                <Text style={styles.readonlyLabel}>Name</Text>
+                <Text style={styles.readonlyLabel}>{t('businessName')}</Text>
                 <Text style={styles.readonlyValue}>{business.name}</Text>
-                <Text style={[styles.readonlyLabel, { marginTop: spacing.md }]}>Currency</Text>
+                <Text style={[styles.readonlyLabel, { marginTop: spacing.md }]}>{t('currencyCode')}</Text>
                 <Text style={styles.readonlyValue}>{business.currency}</Text>
                 <View style={styles.note}>
                   <Ionicons name="lock-closed-outline" size={16} color={colors.inkMuted} />
                   <Text style={styles.noteText}>
-                    Only owners and admins can edit business details.
+                    {t('onlyOwnersAdmins')}
                   </Text>
                 </View>
               </Card>
@@ -154,14 +156,14 @@ export default function BusinessSettingsScreen() {
         ) : (
           <EmptyState
             icon="storefront-outline"
-            title="No business yet"
+            title={t('noBusinessYet')}
             body="Create your first business to start selling and keeping books."
             actionLabel="Create business"
             onAction={() => router.push('/(app)/business-form?mode=create')}
           />
         )}
 
-        <SectionHeader title="Your businesses" />
+        <SectionHeader title={t('yourBusinesses')} />
         <Card padded={false}>
           {businesses.map((item, index) => (
             <ScalePressable
@@ -184,20 +186,20 @@ export default function BusinessSettingsScreen() {
                 <Text style={styles.businessMeta}>{item.currency}</Text>
               </View>
               {item.id === business?.id ? (
-                <Badge label="Active" tone="primary" icon="checkmark" />
+                <Badge label={t('active')} tone="primary" icon="checkmark" />
               ) : (
-                <Text style={styles.switchText}>Switch</Text>
+                <Text style={styles.switchText}>{t('switchBusiness')}</Text>
               )}
             </ScalePressable>
           ))}
           {!businesses.length ? (
-            <EmptyState compact icon="storefront-outline" title="No businesses" />
+            <EmptyState compact icon="storefront-outline" title={t('noBusinesses')} />
           ) : null}
         </Card>
 
         <View style={styles.addRow}>
           <Button
-            title="Create another business"
+            title={t('createAnotherBusiness')}
             variant="secondary"
             icon="add"
             onPress={() => router.push('/(app)/business-form?mode=create')}
@@ -212,20 +214,20 @@ export default function BusinessSettingsScreen() {
 
         {business && isOwner ? (
           <>
-            <SectionHeader title="Danger zone" />
+            <SectionHeader title={t('dangerZone')} />
             <Card style={styles.danger}>
               <View style={styles.dangerIcon}>
                 <Ionicons name="warning-outline" size={20} color={colors.danger} />
               </View>
               <View style={styles.flex}>
-                <Text style={styles.dangerTitle}>Delete this business</Text>
+                <Text style={styles.dangerTitle}>{t('deleteThisBusiness')}</Text>
                 <Text style={styles.dangerBody}>
                   Removes all sales, products, books and members. This cannot be undone.
                 </Text>
               </View>
             </Card>
             <Button
-              title="Delete business"
+              title={t('deleteBusiness')}
               variant="danger"
               icon="trash-outline"
               onPress={confirmDelete}

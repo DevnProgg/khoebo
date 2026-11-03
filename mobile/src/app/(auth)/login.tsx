@@ -7,10 +7,12 @@ import { Button, Header, Screen, TextField } from '../../components/ui';
 import { ApiError } from '../../lib/api';
 import { colors, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
+import { useLanguage } from '../../providers/LanguageProvider';
 
 export default function LoginScreen() {
   const router = useRouter();
   const { signIn } = useAuth();
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,14 +22,14 @@ export default function LoginScreen() {
     Keyboard.dismiss();
     setError(null);
     if (!email.trim() || !password) {
-      setError('Enter your email and password.');
+      setError(`${t('email')} & ${t('password')} required.`);
       return;
     }
     setLoading(true);
     try {
       await signIn(email, password);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Could not sign in. Please try again.');
+      setError(err instanceof ApiError ? err.message : t('couldNotSignIn'));
     } finally {
       setLoading(false);
     }
@@ -51,13 +53,13 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.heading}>
-          <Text style={styles.title}>Welcome back</Text>
-          <Text style={styles.subtitle}>Sign in to pick up where you left off.</Text>
+          <Text style={styles.title}>{t('welcomeBack')}</Text>
+          <Text style={styles.subtitle}>{t('signInSubtitle')}</Text>
         </View>
 
         <View style={styles.form}>
           <TextField
-            label="Email"
+            label={t('email')}
             icon="mail-outline"
             placeholder="you@business.com"
             value={email}
@@ -69,7 +71,7 @@ export default function LoginScreen() {
             textContentType="emailAddress"
           />
           <TextField
-            label="Password"
+            label={t('password')}
             icon="lock-closed-outline"
             placeholder="Your password"
             value={password}
@@ -89,7 +91,7 @@ export default function LoginScreen() {
           ) : null}
 
           <Button
-            title="Sign in"
+            title={t('signIn')}
             onPress={submit}
             loading={loading}
             disabled={loading}
@@ -101,7 +103,7 @@ export default function LoginScreen() {
         <View style={styles.footer}>
           <Text style={styles.footerText}>New to Khoebo?</Text>
           <Pressable onPress={() => router.replace('/(auth)/register')} hitSlop={8}>
-            <Text style={styles.link}>Create an account</Text>
+            <Text style={styles.link}>{t('createAccount')}</Text>
           </Pressable>
         </View>
       </Screen>

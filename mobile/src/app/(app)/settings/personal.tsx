@@ -17,25 +17,27 @@ import { api } from '../../../lib/api';
 import { colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useToast } from '../../../providers/ToastProvider';
+import { useLanguage } from '../../../providers/LanguageProvider';
 
 export default function PersonalInfoScreen() {
   const router = useRouter();
   const toast = useToast();
   const { user, updateUser } = useAuth();
+  const { t } = useLanguage();
   const [fullName, setFullName] = useState(user?.full_name ?? '');
 
   const save = useMutation({
     mutationFn: () => api.auth.updateProfile({ full_name: fullName.trim() }),
     onSuccess: (updated) => {
       updateUser(updated);
-      toast.show('Profile updated');
+      toast.show(t('profileUpdated'));
     },
     onError: (error: Error) => toast.show(error.message, 'error'),
   });
 
   const submit = () => {
     if (!fullName.trim()) {
-      toast.show('Your name cannot be empty.', 'error');
+      toast.show(t('nameCannotBeEmpty'), 'error');
       return;
     }
     save.mutate();
@@ -47,22 +49,22 @@ export default function PersonalInfoScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <Screen>
-        <Header title="Personal information" subtitle="How you appear in Khoebo." />
+        <Header title={t('personalInformation')} subtitle={t('personalInformationSubtitleFull')} />
 
         <Reveal>
           <Card style={styles.profile}>
             <Avatar name={fullName || 'K'} size={64} />
-            <Text style={styles.name}>{fullName || 'Your name'}</Text>
+            <Text style={styles.name}>{fullName || t('yourName')}</Text>
             <Text style={styles.email}>{user?.email}</Text>
           </Card>
         </Reveal>
 
         <View style={styles.form}>
           <TextField
-            label="Full name"
+            label={t('fullName')}
             value={fullName}
             onChangeText={setFullName}
-            placeholder="Your name"
+            placeholder={t('yourName')}
             icon="person-outline"
             autoComplete="name"
             textContentType="name"
@@ -73,17 +75,17 @@ export default function PersonalInfoScreen() {
               <Ionicons name="mail-outline" size={18} color={colors.inkMuted} />
             </View>
             <View style={styles.flex}>
-              <Text style={styles.readonlyLabel}>Email address</Text>
+              <Text style={styles.readonlyLabel}>{t('emailAddress')}</Text>
               <Text style={styles.readonlyValue}>{user?.email}</Text>
             </View>
             <Ionicons name="lock-closed-outline" size={16} color={colors.inkMuted} />
           </View>
           <Text style={styles.helper}>
-            Your email is used to sign in and cannot be changed here.
+            {t('emailLocked')}
           </Text>
 
           <Button
-            title="Save changes"
+            title={t('saveChanges')}
             icon="checkmark-circle-outline"
             onPress={submit}
             loading={save.isPending}
@@ -95,8 +97,8 @@ export default function PersonalInfoScreen() {
               <Ionicons name="lock-closed-outline" size={18} color={colors.primary} />
             </View>
             <View style={styles.flex}>
-              <Text style={styles.linkTitle}>Change your password</Text>
-              <Text style={styles.linkBody}>Keep your account secure.</Text>
+              <Text style={styles.linkTitle}>{t('changePassword')}</Text>
+              <Text style={styles.linkBody}>{t('keepAccountSecure')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={17} color={colors.inkMuted} />
           </Card>

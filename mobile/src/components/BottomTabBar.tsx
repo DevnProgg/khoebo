@@ -6,27 +6,26 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors, radius, shadow, spacing, type } from '../lib/theme';
+import { useLanguage } from '../providers/LanguageProvider';
 import { tapHaptic } from './ui';
 
-const tabs: Record<
-  string,
-  { label: string; active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }
-> = {
-  index: { label: 'Home', active: 'home', inactive: 'home-outline' },
-  sell: { label: 'Sell', active: 'cart', inactive: 'cart-outline' },
-  stock: { label: 'Stock', active: 'cube', inactive: 'cube-outline' },
-  more: { label: 'More', active: 'grid', inactive: 'grid-outline' },
+const tabs: Record<string, { key: 'home' | 'sell' | 'stock' | 'more'; active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }> = {
+  index: { key: 'home', active: 'home', inactive: 'home-outline' },
+  sell: { key: 'sell', active: 'cart', inactive: 'cart-outline' },
+  stock: { key: 'stock', active: 'cube', inactive: 'cube-outline' },
+  more: { key: 'more', active: 'grid', inactive: 'grid-outline' },
 };
 
 export function BottomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
 
   return (
     <View style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, 10) }]}>
       <View style={styles.bar}>
         {state.routes.map((route, index) => {
           const config = tabs[route.name] ?? {
-            label: route.name,
+            key: 'more' as const,
             active: 'ellipse' as const,
             inactive: 'ellipse-outline' as const,
           };
@@ -37,7 +36,7 @@ export function BottomTabBar({ state, emitter, navigateToTab }: BottomTabBarProp
               key={route.key}
               accessibilityRole="button"
               accessibilityState={active ? { selected: true } : {}}
-              accessibilityLabel={config.label}
+              accessibilityLabel={t(config.key)}
               onPress={() => {
                 const event = emitter.emit({
                   type: 'tabPress',
@@ -63,7 +62,7 @@ export function BottomTabBar({ state, emitter, navigateToTab }: BottomTabBarProp
                   <Ionicons name={config.inactive} size={21} color={colors.inkMuted} />
                 )}
               </View>
-              <Text style={[styles.label, active && styles.labelActive]}>{config.label}</Text>
+              <Text style={[styles.label, active && styles.labelActive]}>{t(config.key)}</Text>
             </Pressable>
           );
         })}

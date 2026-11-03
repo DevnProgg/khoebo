@@ -9,6 +9,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { colors } from '../lib/theme';
 import { queryClient } from '../lib/query';
 import { AuthProvider } from '../providers/AuthProvider';
+import { LanguageProvider } from '../providers/LanguageProvider';
 import { ToastProvider } from '../providers/ToastProvider';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -25,22 +26,24 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <ToastProvider>
-              <StatusBar style="dark" />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: colors.background },
-                  animation: 'fade',
-                }}
-              >
-                <Stack.Screen name="index" />
-                <Stack.Screen name="(auth)" />
-                <Stack.Screen name="(app)" />
-              </Stack>
-            </ToastProvider>
-          </AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <ToastProvider>
+                <StatusBar style="dark" />
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    contentStyle: { backgroundColor: colors.background },
+                    animation: 'fade',
+                  }}
+                >
+                  <Stack.Screen name="index" />
+                  <Stack.Screen name="(auth)" />
+                  <Stack.Screen name="(app)" />
+                </Stack>
+              </ToastProvider>
+            </AuthProvider>
+          </LanguageProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

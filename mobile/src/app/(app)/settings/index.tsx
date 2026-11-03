@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
   Avatar,
@@ -18,22 +18,24 @@ import { useBusinessRole } from '../../../hooks/useBusinessRole';
 import { titleCase } from '../../../lib/format';
 import { colors, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
+import { useLanguage } from '../../../providers/LanguageProvider';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, business, signOut } = useAuth();
   const { role } = useBusinessRole();
+  const { language, setLanguage, t } = useLanguage();
 
   const confirmSignOut = () => {
-    Alert.alert('Sign out?', 'You can sign back in at any time.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign out', style: 'destructive', onPress: () => void signOut() },
+    Alert.alert(t('signOutPrompt'), t('signOutAgain'), [
+      { text: t('cancel'), style: 'cancel' },
+      { text: t('signOut'), style: 'destructive', onPress: () => void signOut() },
     ]);
   };
 
   return (
     <Screen>
-      <Header title="Settings" subtitle="Make Khoebo feel like yours." />
+      <Header title={t('settings')} subtitle={t('settingsSubtitle')} />
 
       <Reveal>
         <Card style={styles.profile}>
@@ -54,45 +56,45 @@ export default function SettingsScreen() {
         </Card>
       </Reveal>
 
-      <SectionHeader title="Account" />
+      <SectionHeader title={t('account')} />
       <Card padded={false}>
         <MenuRow
           icon="person-outline"
-          title="Personal information"
-          subtitle="Your name and account email"
+          title={t('personalInformation')}
+          subtitle={t('personalInformationSubtitle')}
           onPress={() => router.push('/(app)/settings/personal')}
         />
         <MenuRow
           icon="lock-closed-outline"
-          title="Password & security"
-          subtitle="Change your password"
+          title={t('passwordSecurity')}
+          subtitle={t('passwordSecuritySubtitle')}
           onPress={() => router.push('/(app)/settings/security')}
           last
         />
       </Card>
 
-      <SectionHeader title="Business" />
+      <SectionHeader title={t('business')} />
       <Card padded={false}>
         <MenuRow
           icon="storefront-outline"
-          title="Business profile"
-          subtitle={business ? `${business.name} · ${business.currency}` : 'No business selected'}
+          title={t('businessProfile')}
+          subtitle={business ? `${business.name} · ${business.currency}` : t('noBusinessSelected')}
           onPress={() => router.push('/(app)/settings/business')}
         />
         <MenuRow
           icon="people-outline"
-          title="Team & roles"
-          subtitle="Manage who has access"
+          title={t('teamRoles')}
+          subtitle={t('teamRolesSubtitle')}
           onPress={() => router.push('/(app)/team')}
           last
         />
       </Card>
 
-      <SectionHeader title="Support" />
+      <SectionHeader title={t('support')} />
       <Card padded={false}>
         <MenuRow
           icon="help-circle-outline"
-          title="About Khoebo"
+          title={t('aboutKhoebo')}
           subtitle={`Version ${Constants.expoConfig?.version ?? '1.0.0'}`}
           onPress={() =>
             Alert.alert(
@@ -104,13 +106,36 @@ export default function SettingsScreen() {
         />
       </Card>
 
+      <SectionHeader title={t('language')} />
+      <Card style={styles.languageCard}>
+        <View style={styles.flex}>
+          <Text style={styles.languageTitle}>{t('language')}</Text>
+          <Text style={styles.languageBody}>{t('languageSubtitle')}</Text>
+        </View>
+        <View style={styles.languageOptions}>
+          {(['en', 'st'] as const).map((option) => (
+            <Pressable
+              key={option}
+              accessibilityRole="button"
+              accessibilityState={{ selected: language === option }}
+              onPress={() => void setLanguage(option)}
+              style={[styles.languageOption, language === option && styles.languageOptionSelected]}
+            >
+              <Text style={[styles.languageOptionText, language === option && styles.languageOptionTextSelected]}>
+                {option === 'en' ? t('english') : t('sesotho')}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
+
       <Card style={styles.signOut} onPress={confirmSignOut}>
         <View style={styles.signOutIcon}>
           <Ionicons name="log-out-outline" size={20} color={colors.danger} />
         </View>
         <View style={styles.flex}>
-          <Text style={styles.signOutTitle}>Sign out</Text>
-          <Text style={styles.signOutBody}>Your data stays safe and ready for next time.</Text>
+          <Text style={styles.signOutTitle}>{t('signOut')}</Text>
+          <Text style={styles.signOutBody}>{t('signOutBody')}</Text>
         </View>
         <Ionicons name="chevron-forward" size={18} color={colors.inkMuted} />
       </Card>
@@ -150,6 +175,42 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl,
     backgroundColor: colors.dangerSoft,
     borderColor: '#F6D4D4',
+  },
+  languageCard: {
+    gap: spacing.md,
+  },
+  languageTitle: {
+    ...type.bodyStrong,
+    color: colors.ink,
+  },
+  languageBody: {
+    ...type.small,
+    color: colors.inkMuted,
+    marginTop: 1,
+  },
+  languageOptions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  languageOption: {
+    flex: 1,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: spacing.sm,
+    paddingVertical: spacing.sm,
+  },
+  languageOptionSelected: {
+    backgroundColor: colors.primarySoft,
+    borderColor: colors.primary,
+  },
+  languageOptionText: {
+    ...type.small,
+    color: colors.inkSoft,
+  },
+  languageOptionTextSelected: {
+    color: colors.primaryDark,
+    fontWeight: '700',
   },
   signOutIcon: {
     width: 42,

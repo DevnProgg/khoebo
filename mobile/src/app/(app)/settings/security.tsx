@@ -8,16 +8,17 @@ import { api } from '../../../lib/api';
 import { colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useToast } from '../../../providers/ToastProvider';
-
-const requirements = [
-  { label: 'At least 8 characters', test: (value: string) => value.length >= 8 },
-  { label: 'Contains a letter', test: (value: string) => /[A-Za-z]/.test(value) },
-  { label: 'Contains a number', test: (value: string) => /\d/.test(value) },
-];
+import { useLanguage } from '../../../providers/LanguageProvider';
 
 export default function SecurityScreen() {
   const toast = useToast();
   const { user, signIn } = useAuth();
+  const { t } = useLanguage();
+  const requirements = [
+    { label: t('atLeastEight'), test: (value: string) => value.length >= 8 },
+    { label: t('containsLetter'), test: (value: string) => /[A-Za-z]/.test(value) },
+    { label: t('containsNumber'), test: (value: string) => /\d/.test(value) },
+  ];
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -29,7 +30,7 @@ export default function SecurityScreen() {
         try {
           await signIn(user.email, next);
         } catch {
-          toast.show('Password changed. Sign in again on this device.', 'info');
+          toast.show(t('passwordChanged'), 'info');
         }
       }
     },
@@ -37,7 +38,7 @@ export default function SecurityScreen() {
       setCurrent('');
       setNext('');
       setConfirm('');
-      toast.show('Password updated');
+      toast.show(t('passwordChanged'));
     },
     onError: (error: Error) => toast.show(error.message, 'error'),
   });
@@ -46,15 +47,15 @@ export default function SecurityScreen() {
 
   const submit = () => {
     if (!current) {
-      toast.show('Enter your current password.', 'error');
+      toast.show(t('enterCurrentPassword'), 'error');
       return;
     }
     if (!valid) {
-      toast.show('Your new password does not meet the requirements.', 'error');
+      toast.show(t('passwordRequirements'), 'error');
       return;
     }
     if (next !== confirm) {
-      toast.show('Those passwords do not match.', 'error');
+      toast.show(t('passwordsDoNotMatch'), 'error');
       return;
     }
     change.mutate();
@@ -66,24 +67,22 @@ export default function SecurityScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <Screen>
-        <Header title="Password & security" subtitle="Keep your account protected." />
+        <Header title={t('passwordSecurity')} subtitle={t('passwordSecuritySubtitleFull')} />
 
         <Reveal>
           <Card style={styles.iconCard}>
             <View style={styles.bigIcon}>
               <Ionicons name="shield-checkmark-outline" size={30} color={colors.primary} />
             </View>
-            <Text style={styles.title}>Choose a strong password</Text>
-            <Text style={styles.body}>
-              Changing your password signs out other devices where you are logged in.
-            </Text>
+            <Text style={styles.title}>{t('chooseStrongPassword')}</Text>
+            <Text style={styles.body}>{t('passwordChangeWarning')}</Text>
           </Card>
         </Reveal>
 
         <View style={styles.form}>
           <TextField
-            label="Current password"
-            placeholder="Your current password"
+            label={t('currentPassword')}
+            placeholder={t('yourCurrentPassword')}
             value={current}
             onChangeText={setCurrent}
             secure
@@ -93,8 +92,8 @@ export default function SecurityScreen() {
             icon="lock-closed-outline"
           />
           <TextField
-            label="New password"
-            placeholder="At least 8 characters"
+            label={t('newPassword')}
+            placeholder={t('atLeastEight')}
             value={next}
             onChangeText={setNext}
             secure
@@ -104,8 +103,8 @@ export default function SecurityScreen() {
             icon="key-outline"
           />
           <TextField
-            label="Confirm new password"
-            placeholder="Repeat your new password"
+            label={t('confirmNewPassword')}
+            placeholder={t('repeatPassword')}
             value={confirm}
             onChangeText={setConfirm}
             secure
@@ -144,14 +143,14 @@ export default function SecurityScreen() {
                     next === confirm ? styles.requirementMet : { color: colors.danger },
                   ]}
                 >
-                  Passwords match
+                  {t('passwordsMatch')}
                 </Text>
               </View>
             ) : null}
           </Card>
 
           <Button
-            title="Update password"
+            title={t('updatePassword')}
             icon="shield-checkmark-outline"
             onPress={submit}
             loading={change.isPending}

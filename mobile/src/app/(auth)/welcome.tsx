@@ -9,16 +9,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Logo } from '../../components/Brand';
 import { Button } from '../../components/ui';
 import { colors, radius, spacing, type } from '../../lib/theme';
-
-const features: { icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
-  { icon: 'cart-outline', label: 'Sales' },
-  { icon: 'cube-outline', label: 'Stock' },
-  { icon: 'bar-chart-outline', label: 'Insights' },
-  { icon: 'book-outline', label: 'Books' },
-];
+import { useLanguage } from '../../providers/LanguageProvider';
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const { t } = useLanguage();
+  const features: { icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
+    { icon: 'cart-outline', label: t('sales') },
+    { icon: 'cube-outline', label: t('stock') },
+    { icon: 'bar-chart-outline', label: t('insights') },
+    { icon: 'book-outline', label: t('books') },
+  ];
 
   return (
     <View style={styles.root}>
@@ -38,12 +39,10 @@ export default function WelcomeScreen() {
         <Animated.View entering={FadeInUp.delay(120).duration(600)} style={styles.hero}>
           <View style={styles.eyebrow}>
             <View style={styles.dot} />
-            <Text style={styles.eyebrowText}>BUSINESS, SIMPLIFIED</Text>
+            <Text style={styles.eyebrowText}>{t('businessSimplified')}</Text>
           </View>
-          <Text style={styles.title}>Know your numbers.{'\n'}Grow with confidence.</Text>
-          <Text style={styles.subtitle}>
-            Sell, track stock, and keep clean books,all in one calm, connected place.
-          </Text>
+          <Text style={styles.title}>{t('knowYourNumbers')}{'\n'}{t('growWithConfidence')}</Text>
+          <Text style={styles.subtitle}>{t('welcomeSubtitle')}</Text>
 
           <View style={styles.features}>
             {features.map((feature) => (
@@ -56,13 +55,13 @@ export default function WelcomeScreen() {
         </Animated.View>
 
         <Animated.View entering={FadeInUp.delay(240).duration(600)} style={styles.actions}>
-          <Button title="Get started" icon="arrow-forward" onPress={() => router.push('/(auth)/register')} />
+          <Button title={t('getStarted')} icon="arrow-forward" onPress={() => router.push('/(auth)/register')} />
           <Button
-            title="I already have an account"
+            title={t('alreadyHaveAccount')}
             variant="secondary"
             onPress={() => router.push('/(auth)/login')}
           />
-          <Text style={styles.footnote}>Made for small businesses that do big things.</Text>
+          <Text style={styles.footnote}>{t('madeForSmallBusinesses')}</Text>
         </Animated.View>
       </SafeAreaView>
     </View>
