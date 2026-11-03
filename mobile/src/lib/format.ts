@@ -1,4 +1,5 @@
 import type { Decimal } from './types';
+import { currencySymbols } from './theme';
 
 export const toNumber = (value: Decimal | null | undefined): number => {
   if (value === null || value === undefined) return 0;
@@ -12,16 +13,17 @@ export function formatMoney(
   compact = false,
 ): string {
   const amount = toNumber(value);
+  const normalizedCurrency = currency.toUpperCase();
+  const symbol = currencySymbols[normalizedCurrency] ?? normalizedCurrency;
   try {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
+    const formattedAmount = new Intl.NumberFormat('en-US', {
       notation: compact ? 'compact' : 'standard',
       maximumFractionDigits: compact ? 1 : 2,
       minimumFractionDigits: compact ? 0 : 2,
     }).format(amount);
+    return `${symbol} ${formattedAmount}`;
   } catch {
-    return `${currency} ${amount.toFixed(2)}`;
+    return `${symbol} ${amount.toFixed(2)}`;
   }
 }
 

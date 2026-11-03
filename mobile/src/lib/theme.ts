@@ -92,5 +92,5 @@ export const type = {
 };
 
 export const currencySymbols: Record<string, string> = {
-  LSL: 'L',
+  LSL: 'M',
 };
