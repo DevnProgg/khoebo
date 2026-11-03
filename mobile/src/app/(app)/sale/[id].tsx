@@ -37,7 +37,7 @@ export default function SaleDetailScreen() {
     enabled: Boolean(business && id),
   });
 
-  const currency = business?.currency ?? 'USD';
+  const currency = business?.currency ?? 'LSL';
   const data = sale.data;
 
   const refund = useMutation({

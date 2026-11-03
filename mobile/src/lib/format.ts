@@ -8,7 +8,7 @@ export const toNumber = (value: Decimal | null | undefined): number => {
 
 export function formatMoney(
   value: Decimal | null | undefined,
-  currency = 'USD',
+  currency = 'LSL',
   compact = false,
 ): string {
   const amount = toNumber(value);

@@ -42,7 +42,7 @@ export default function SalesHistoryScreen() {
     enabled: Boolean(business),
   });
 
-  const currency = business?.currency ?? 'USD';
+  const currency = business?.currency ?? 'LSL';
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     const list = sales.data ?? [];

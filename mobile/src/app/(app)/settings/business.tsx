@@ -7,7 +7,6 @@ import {
   Badge,
   Button,
   Card,
-  Chip,
   EmptyState,
   Header,
   IconButton,
@@ -23,8 +22,6 @@ import { colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useToast } from '../../../providers/ToastProvider';
 
-const commonCurrencies = ['USD', 'EUR', 'GBP', 'ZAR', 'NGN', 'KES', 'GHS', 'INR'];
-
 export default function BusinessSettingsScreen() {
   const router = useRouter();
   const toast = useToast();
@@ -37,12 +34,11 @@ export default function BusinessSettingsScreen() {
   } = useAuth();
   const { role, isOwner, canManage } = useBusinessRole();
   const [name, setName] = useState(business?.name ?? '');
-  const [currency, setCurrency] = useState(business?.currency ?? 'USD');
+  const currency = 'LSL';
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setName(business?.name ?? '');
-    setCurrency(business?.currency ?? 'USD');
   }, [business?.id, business?.name, business?.currency]);
 
   const dirty =
@@ -54,15 +50,11 @@ export default function BusinessSettingsScreen() {
       toast.show('Business name cannot be empty.', 'error');
       return;
     }
-    if (!/^[A-Z]{3}$/.test(currency.toUpperCase())) {
-      toast.show('Use a three-letter currency code.', 'error');
-      return;
-    }
     setSaving(true);
     try {
       await updateBusiness(business.id, {
         name: name.trim(),
-        currency: currency.toUpperCase(),
+        currency,
       });
       toast.show('Business updated');
     } catch (error) {
@@ -132,23 +124,9 @@ export default function BusinessSettingsScreen() {
                   <TextField
                     label="Currency code"
                     value={currency}
-                    onChangeText={(value) => setCurrency(value.toUpperCase())}
-                    placeholder="USD"
-                    maxLength={3}
-                    autoCapitalize="characters"
-                    autoCorrect={false}
+                    editable={false}
                     icon="cash-outline"
                   />
-                  <View style={styles.chips}>
-                    {commonCurrencies.map((code) => (
-                      <Chip
-                        key={code}
-                        label={code}
-                        selected={currency === code}
-                        onPress={() => setCurrency(code)}
-                      />
-                    ))}
-                  </View>
                 </View>
                 <Button
                   title="Save changes"

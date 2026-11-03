@@ -66,7 +66,7 @@ export default function StockScreen() {
     enabled: Boolean(business),
   });
 
-  const currency = business?.currency ?? 'USD';
+  const currency = business?.currency ?? 'LSL';
   const all = useMemo(() => products.data ?? [], [products.data]);
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();

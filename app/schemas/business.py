@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field
 
 from app.models.enums import MemberRole
 from app.schemas.auth import UserOut
@@ -10,22 +11,12 @@ from app.schemas.common import ORMModel
 
 class BusinessCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
-    currency: str = Field(default="USD", min_length=3, max_length=3)
-
-    @field_validator("currency")
-    @classmethod
-    def uppercase_currency(cls, value: str) -> str:
-        return value.upper()
+    currency: Literal["LSL"] = "LSL"
 
 
 class BusinessUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255)
-    currency: str | None = Field(default=None, min_length=3, max_length=3)
-
-    @field_validator("currency")
-    @classmethod
-    def uppercase_currency(cls, value: str | None) -> str | None:
-        return value.upper() if value else value
+    currency: Literal["LSL"] | None = None
 
 
 class BusinessOut(ORMModel):

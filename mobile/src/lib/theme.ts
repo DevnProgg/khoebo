@@ -92,14 +92,5 @@ export const type = {
 };
 
 export const currencySymbols: Record<string, string> = {
-  USD: '$',
-  EUR: '€',
-  GBP: '£',
-  ZAR: 'R',
-  NGN: '₦',
-  KES: 'KSh',
-  GHS: '₵',
-  INR: '₹',
-  CAD: 'C$',
-  AUD: 'A$',
+  LSL: 'L',
 };

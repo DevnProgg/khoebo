@@ -6,7 +6,6 @@ import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-na
 import {
   Button,
   Card,
-  Chip,
   Header,
   Reveal,
   Screen,
@@ -16,14 +15,12 @@ import { colors, radius, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
 import { useToast } from '../../providers/ToastProvider';
 
-const currencies = ['USD', 'EUR', 'GBP', 'ZAR', 'NGN', 'KES', 'GHS', 'INR'];
-
 export default function BusinessFormScreen() {
   const router = useRouter();
   const toast = useToast();
   const { createBusiness } = useAuth();
   const [name, setName] = useState('');
-  const [currency, setCurrency] = useState('USD');
+  const currency = 'LSL';
 
   const create = useMutation({
     mutationFn: () =>
@@ -38,10 +35,6 @@ export default function BusinessFormScreen() {
   const submit = () => {
     if (!name.trim()) {
       toast.show('Give your business a name.', 'error');
-      return;
-    }
-    if (!/^[A-Z]{3}$/.test(currency.toUpperCase())) {
-      toast.show('Use a three-letter currency code.', 'error');
       return;
     }
     create.mutate();
@@ -83,25 +76,11 @@ export default function BusinessFormScreen() {
             <TextField
               label="Currency"
               value={currency}
-              onChangeText={(value) => setCurrency(value.toUpperCase())}
-              maxLength={3}
-              autoCapitalize="characters"
-              autoCorrect={false}
               icon="cash-outline"
-              placeholder="USD"
+              editable={false}
             />
-            <View style={styles.chips}>
-              {currencies.map((code) => (
-                <Chip
-                  key={code}
-                  label={code}
-                  selected={currency === code}
-                  onPress={() => setCurrency(code)}
-                />
-              ))}
-            </View>
             <Text style={styles.helper}>
-              Sales, stock values and reports use this currency.
+              Sales, stock values and reports use Lesotho loti (LSL).
             </Text>
           </View>
 

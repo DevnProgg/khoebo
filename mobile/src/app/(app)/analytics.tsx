@@ -50,7 +50,7 @@ export default function AnalyticsScreen() {
     enabled: Boolean(business),
   });
 
-  const currency = business?.currency ?? 'USD';
+  const currency = business?.currency ?? 'LSL';
   const data = overview.data;
   const payments = Object.entries(data?.revenue_by_payment_method ?? {});
   const paymentTotal = payments.reduce((sum, [, value]) => sum + toNumber(value), 0);

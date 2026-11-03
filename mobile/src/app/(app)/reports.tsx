@@ -42,7 +42,7 @@ export default function ReportsScreen() {
     return startOfMonthISO();
   }, [range]);
 
-  const currency = business?.currency ?? 'USD';
+  const currency = business?.currency ?? 'LSL';
 
   const trial = useQuery({
     queryKey: ['report-trial', business?.id],

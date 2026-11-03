@@ -1,6 +1,29 @@
 from fastapi.testclient import TestClient
 
 
+def test_business_currency_is_lsl_only(
+    client: TestClient, user_factory, business_factory
+) -> None:
+    owner = user_factory()
+    business = business_factory(owner)
+
+    assert business["currency"] == "LSL"
+
+    create_usd = client.post(
+        "/api/v1/businesses",
+        json={"name": "Dollar Business", "currency": "USD"},
+        headers=owner["headers"],
+    )
+    assert create_usd.status_code == 422
+
+    update_usd = client.patch(
+        f"/api/v1/businesses/{business['id']}",
+        json={"currency": "USD"},
+        headers=owner["headers"],
+    )
+    assert update_usd.status_code == 422
+
+
 def test_create_business_seeds_owner_and_chart_of_accounts(
     client: TestClient, user_factory, business_factory
 ) -> None:

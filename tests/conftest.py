@@ -98,7 +98,7 @@ def user_factory(client: TestClient):
 
 @pytest.fixture()
 def business_factory(client: TestClient):
-    def create_business(user: dict, name: str | None = None, currency: str = "USD") -> dict:
+    def create_business(user: dict, name: str | None = None, currency: str = "LSL") -> dict:
         name = name or f"Business {uuid.uuid4().hex[:8]}"
         response = client.post(
             "/api/v1/businesses",

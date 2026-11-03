@@ -51,7 +51,7 @@ export default function BookkeepingScreen() {
     enabled: Boolean(business),
   });
 
-  const currency = business?.currency ?? 'USD';
+  const currency = business?.currency ?? 'LSL';
   const accountMap = useMemo(() => {
     const map = new Map<string, Account>();
     (accounts.data ?? []).forEach((account) => map.set(account.id, account));

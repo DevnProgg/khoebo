@@ -83,7 +83,7 @@ export default function HomeScreen() {
     ]);
   };
 
-  const currency = business?.currency ?? 'USD';
+  const currency = business?.currency ?? 'LSL';
   const data = overview.data;
   const todayRevenue =
     data?.revenue_by_day.find((item) => item.date === end)?.revenue ?? 0;
