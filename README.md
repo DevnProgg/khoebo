@@ -6,28 +6,28 @@ SQLite by default and PostgreSQL via migrations.
 
 ## Features
 
-- **Authentication & user management** — Argon2id password hashing, short-lived
+- **Authentication & user management**,Argon2id password hashing, short-lived
   JWT access tokens, rotating refresh tokens (hashed at rest and revocable),
   password changes, superuser user management.
-- **Business accounts** — users can belong to multiple businesses with
+- **Business accounts**,users can belong to multiple businesses with
   `owner` / `admin` / `member` roles. Every business gets a seeded chart of
   accounts.
-- **Inventory** — products, SKU uniqueness per business, stock in/out/adjustment
+- **Inventory**,products, SKU uniqueness per business, stock in/out/adjustment
   movements, stock ledger and low-stock detection.
-- **Point of sale** — multi-line sales, discounts, tax, payment methods,
+- **Point of sale**,multi-line sales, discounts, tax, payment methods,
   automatic stock deduction and refunds that restore stock.
-- **Double-entry bookkeeping** — every sale posts balanced journal entries
+- **Double-entry bookkeeping**,every sale posts balanced journal entries
   (cash, revenue, discounts, tax payable, COGS, inventory). Expenses post
   automatically, manual journal entries are validated, and entries can be
   reversed.
-- **Analytics** — revenue, COGS, gross/net profit, expenses, average sale,
+- **Analytics**,revenue, COGS, gross/net profit, expenses, average sale,
   discounts, tax collected, inventory valuation, low-stock count, top products,
   daily revenue and payment-method breakdown.
-- **Reports** — trial balance, income statement, inventory valuation and sales
+- **Reports**,trial balance, income statement, inventory valuation and sales
   summary.
-- **Reminders** — one-off or recurring reminders for low stock, recording sales,
+- **Reminders**,one-off or recurring reminders for low stock, recording sales,
   stock counts or custom tasks, with due/overdue evaluation, trigger and snooze.
-- **Security** — tenant isolation on every business-scoped query, role checks,
+- **Security**,tenant isolation on every business-scoped query, role checks,
   generic login errors, disabled interactive docs and secret validation in
   production, security headers, CORS allow-list and SQLite foreign keys enabled.
 
@@ -126,12 +126,12 @@ Refunds reverse the original entry and return stock.
 
 See `.env.example`. Important settings:
 
-- `SECRET_KEY` — required, at least 32 characters in production
-- `DATABASE_URL` — SQLite or `postgresql+psycopg://...`
+- `SECRET_KEY`,required, at least 32 characters in production
+- `DATABASE_URL`,SQLite or `postgresql+psycopg://...`
 - `ACCESS_TOKEN_EXPIRE_MINUTES` (default 15)
 - `REFRESH_TOKEN_EXPIRE_DAYS` (default 7)
-- `AUTO_CREATE_TABLES` — development only
-- `CORS_ORIGINS` — JSON array of allowed front-end origins
+- `AUTO_CREATE_TABLES`,development only
+- `CORS_ORIGINS`,JSON array of allowed front-end origins
 
 ## Production hardening
 

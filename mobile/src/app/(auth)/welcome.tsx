@@ -42,7 +42,7 @@ export default function WelcomeScreen() {
           </View>
           <Text style={styles.title}>Know your numbers.{'\n'}Grow with confidence.</Text>
           <Text style={styles.subtitle}>
-            Sell, track stock, and keep clean books — all in one calm, connected place.
+            Sell, track stock, and keep clean books,all in one calm, connected place.
           </Text>
 
           <View style={styles.features}>
