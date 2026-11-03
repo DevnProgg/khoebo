@@ -211,6 +211,7 @@ const translations = {
     offline: 'Offline',
     offlineMessage: 'Working from saved data. Changes will sync when you reconnect.',
     pendingChanges: 'pending changes',
+    dismiss: 'Dismiss',
   },
   st: {
     home: 'Lapeng',
@@ -415,6 +416,7 @@ const translations = {
     offline: 'Ha ho marang-rang',
     offlineMessage: 'U sebetsa ka lintlha tse bolokiloeng. Liphetoho li tla lumellana ha u hokela hape.',
     pendingChanges: 'liphetoho tse emetseng',
+    dismiss: 'Koala',
   },
 } as const;
 
