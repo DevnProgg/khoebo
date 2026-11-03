@@ -27,13 +27,6 @@ export default function MoreScreen() {
   const { role, canManage } = useBusinessRole();
   const { t } = useLanguage();
 
-  const confirmSignOut = () => {
-    Alert.alert(t('signOutPrompt'), t('signOutAgain'), [
-      { text: t('cancel'), style: 'cancel' },
-      { text: t('signOut'), style: 'destructive', onPress: () => void signOut() },
-    ]);
-  };
-
   return (
     <Screen bottomTab>
       <View style={styles.header}>
@@ -157,7 +150,7 @@ export default function MoreScreen() {
           icon="log-out-outline"
           title={t('signOut')}
           tone="danger"
-          onPress={confirmSignOut}
+          onPress={() => void signOut()}
           right={<View />}
           last
         />

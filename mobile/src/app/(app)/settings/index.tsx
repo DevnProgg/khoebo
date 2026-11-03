@@ -26,13 +26,6 @@ export default function SettingsScreen() {
   const { role } = useBusinessRole();
   const { language, setLanguage, t } = useLanguage();
 
-  const confirmSignOut = () => {
-    Alert.alert(t('signOutPrompt'), t('signOutAgain'), [
-      { text: t('cancel'), style: 'cancel' },
-      { text: t('signOut'), style: 'destructive', onPress: () => void signOut() },
-    ]);
-  };
-
   return (
     <Screen>
       <Header title={t('settings')} subtitle={t('settingsSubtitle')} />
@@ -129,7 +122,7 @@ export default function SettingsScreen() {
         </View>
       </Card>
 
-      <Card style={styles.signOut} onPress={confirmSignOut}>
+      <Card style={styles.signOut} onPress={() => void signOut()}>
         <View style={styles.signOutIcon}>
           <Ionicons name="log-out-outline" size={20} color={colors.danger} />
         </View>
