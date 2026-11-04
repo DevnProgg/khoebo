@@ -1,0 +1,901 @@
+{
+  "schema_version": "1.0.0",
+  "jurisdiction": "LS",
+  "country": "Lesotho",
+  "currency": "LSL",
+  "prepared_on": "2026-11-04",
+  "documentation": "docs/tax/lesotho_tax_rules.md",
+  "status_legend": {
+    "primary": "Verified directly in an Act, regulation, legal notice or gazette.",
+    "official-secondary": "Stated by RSL in an official guide, form or tax-rate page, but not verified in the primary instrument.",
+    "open": "Unresolved, conflicting, inaccessible, or dependent on a future RSL notice.",
+    "historical": "Applies only to the stated prior period."
+  },
+  "tax_year": {
+    "label": "2026/27",
+    "start": "2026-04-01",
+    "end": "2027-03-31",
+    "standard_end_day": 31,
+    "standard_end_month": 3,
+    "company_substitution_allowed": true,
+    "company_substitution_source_ids": ["S1-ITA-1993-S49"]
+  },
+  "sources": [
+    {
+      "id": "S1-ITA-1993",
+      "title": "Income Tax Act 1993",
+      "publisher": "Kingdom of Lesotho / Revenue Services Lesotho",
+      "document_type": "consolidated_act",
+      "version": "Updated to 1 April 2012",
+      "url": "http://www.rsl.org.ls/sites/default/files/2024-05/Income%20Tax%20Act%201993%20%20Updated%20up%20to%201%20April%202012.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S1-ITA-1993-S49",
+      "title": "Income Tax Act 1993, section 49",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "act_section",
+      "url": "http://www.rsl.org.ls/sites/default/files/2024-05/Income%20Tax%20Act%201993%20%20Updated%20up%20to%201%20April%202012.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S2-ITA-AMEND-2014",
+      "title": "Income Tax (Amendment) Act, 2014",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "amending_act",
+      "reference": "Act No. 2 of 2014",
+      "gazette": "Government Gazette Vol. 59 No. 33, 13 June 2014",
+      "url": "https://www.rsl.org.ls/sites/default/files/2024-06/INCOME%20TAX%20AMENDMENT%20ACT%20NO%202%20OF%202014.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S3-LN24-2026",
+      "title": "Income Tax (Amendment of Monetary Amounts) Regulations, 2026",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "regulation",
+      "reference": "Legal Notice No. 24 of 2026",
+      "gazette": "Government Gazette Vol. 71 No. 25, 27 March 2026",
+      "url": "https://www.rsl.org.ls/sites/default/files/2026-09/INCOME%20TAX%20%28AMA%29%20REGULATIONS%20No.24%20of%202026.%20%281%29%20%281%29_0.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S4-RSL-PIT-2026-27",
+      "title": "Income Tax Structure for the Period Starting 1 April 2026 Onwards",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "official_guidance",
+      "url": "https://www.rsl.org.ls/sites/default/files/2026-09/2026%20-%202027%20Income%20Tax%20structure%201.pdf",
+      "status": "official-secondary"
+    },
+    {
+      "id": "S5-VAT-ACT-2001",
+      "title": "Value Added Tax Act 2001",
+      "publisher": "Kingdom of Lesotho / Revenue Services Lesotho",
+      "document_type": "consolidated_act",
+      "url": "https://www.rsl.org.ls/sites/default/files/2026-09/VAT%20ACT%20-%202001.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S6-VAT-REGS-2003",
+      "title": "Value Added Tax Regulations 2003",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "regulation",
+      "reference": "Legal Notice No. 95 of 2003",
+      "url": "http://www.rsl.org.ls/sites/default/files/2024-06/VAT%20Regulations%20Legal%20Notice%2095%202003.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S7-LN27-2018",
+      "title": "Value Added Tax (Amendment) Regulations, 2018",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "regulation",
+      "reference": "Legal Notice No. 27 of 2018",
+      "url": "https://www.rsl.org.ls/sites/default/files/2024-08/Value%20Added%20Tax%20%28Amendment%29%20Regulations%20No.27%20of%202018.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S8-LN18-2020",
+      "title": "Value Added Tax (Amendment) Regulations, 2020",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "regulation",
+      "reference": "Legal Notice No. 18 of 2020",
+      "local_archive": "vat_regs_2020.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S9-LN30-2021",
+      "title": "Value Added Tax (Amendment) Regulations, 2021",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "regulation",
+      "reference": "Legal Notice No. 30 of 2021",
+      "local_archive": "vat_amendment_regs_2021.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S10-LN69-2025",
+      "title": "Value Added Tax (Threshold for Registration of Vendors) (Amendment) Regulations, 2025",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "regulation",
+      "reference": "Legal Notice No. 69 of 2025",
+      "gazette": "Government Gazette, 25 April 2025",
+      "url": "https://lesotholii.org/akn/ls/officialGazette/government-gazette/2025-04-25/35/eng@2025-04-25/source.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S11-VAT-101",
+      "title": "Tax Guide on Registration for VAT Purposes - VAT 101",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "official_guidance",
+      "url": "https://www.rsl.org.ls/sites/default/files/2026-09/Guide%20on%20Registration%20For%20Value%20Added%20Tax%20Purposes%20%20-%20VAT%20101%20%281%29.pdf",
+      "status": "official-secondary"
+    },
+    {
+      "id": "S12-LN25-2026-EINVOICE",
+      "title": "Value Added Tax (E-Invoicing) Regulations, 2026",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "regulation",
+      "reference": "Legal Notice No. 25 of 2026",
+      "url": "https://www.rsl.org.ls/sites/default/files/2026-09/VAT%20-%20E-Invoicing%20Regulations%20No.25%20of%202026%20%283%29.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S13-RSL-TAX-RATES",
+      "title": "Tax Rates",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "official_web_page",
+      "url": "https://www.rsl.org.ls/tax-rates",
+      "status": "official-secondary"
+    },
+    {
+      "id": "S14-CORPORATE-GUIDE-2025",
+      "title": "Guide on Corporate Tax (2025)",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "official_guidance",
+      "url": "http://www.rsl.org.ls/sites/default/files/2025-06/Guide%20on%20Corporate%20Tax.pdf",
+      "status": "open",
+      "note": "URL returns 404/HTML. Not relied on for rates."
+    },
+    {
+      "id": "S15-REG-GUIDE-2017",
+      "title": "Guide on Tax Registration (2017)",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "official_guidance",
+      "local_archive": "reg_guide_2017.pdf",
+      "status": "official-secondary"
+    },
+    {
+      "id": "S16-PROV-GUIDE-2018",
+      "title": "Provisional Tax Guide (2018)",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "official_guidance",
+      "local_archive": "prov_guide_2018.pdf",
+      "status": "official-secondary"
+    },
+    {
+      "id": "S17-PAYE-GUIDE-2020",
+      "title": "PAYE Guide (2020)",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "official_guidance",
+      "local_archive": "paye_guide_2020.pdf",
+      "status": "official-secondary"
+    },
+    {
+      "id": "S18-IT-AMA-2020",
+      "title": "Income Tax (Amendment of Monetary Amounts) Regulations, 2020",
+      "publisher": "Kingdom of Lesotho",
+      "document_type": "regulation",
+      "reference": "Legal Notice No. 17 of 2020",
+      "local_archive": "it_regs_2020.pdf",
+      "status": "primary"
+    },
+    {
+      "id": "S19-VAT-RETURN-12",
+      "title": "Value Added Tax Return VAT-12",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "tax_form",
+      "local_archive": "vat_return.pdf",
+      "status": "official-secondary"
+    },
+    {
+      "id": "S20-S128-I-2023",
+      "title": "Individual Income Tax Return S128-I (2023)",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "tax_form",
+      "local_archive": "individual_2023.pdf",
+      "status": "official-secondary"
+    },
+    {
+      "id": "S21-FBT1",
+      "title": "Fringe Benefits Tax Return FBT1",
+      "publisher": "Revenue Services Lesotho",
+      "document_type": "tax_form",
+      "local_archive": "fbt_return.pdf",
+      "status": "official-secondary"
+    }
+  ],
+  "taxpayer_types": [
+    {
+      "id": "sole_trader",
+      "taxed_entity": "individual",
+      "return_form": "S128-I",
+      "tax_basis": "resident_individual_rates"
+    },
+    {
+      "id": "partner",
+      "taxed_entity": "individual",
+      "return_form": "S128-I",
+      "tax_basis": "resident_individual_rates_on_distributive_share"
+    },
+    {
+      "id": "partnership",
+      "taxed_entity": "partners",
+      "return_form": "S128-P",
+      "tax_basis": "information_return"
+    },
+    {
+      "id": "resident_company",
+      "taxed_entity": "company",
+      "return_form": "S128-C",
+      "tax_basis": "corporate_rates"
+    },
+    {
+      "id": "non_resident_company_branch",
+      "taxed_entity": "branch",
+      "return_form": "S128-C",
+      "tax_basis": "corporate_standard_rate_only"
+    }
+  ],
+  "personal_income_tax": {
+    "rate_sets": [
+      {
+        "tax_year": "2025/26",
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31",
+        "currency": "LSL",
+        "brackets": [
+          {
+            "lower": 0,
+            "upper": 74040,
+            "rate": 0.20
+          },
+          {
+            "lower": 74040,
+            "upper": null,
+            "rate": 0.30
+          }
+        ],
+        "annual_credit": 11640,
+        "monthly_credit": 970,
+        "status": "primary",
+        "source_ids": ["S3-LN24-2026"],
+        "note": "Prior-year amounts are stated in LN 24 of 2026 as the amounts being replaced."
+      },
+      {
+        "tax_year": "2026/27",
+        "effective_from": "2026-04-01",
+        "effective_to": "2027-03-31",
+        "currency": "LSL",
+        "brackets": [
+          {
+            "lower": 0,
+            "upper": 77760,
+            "rate": 0.20
+          },
+          {
+            "lower": 77760,
+            "upper": null,
+            "rate": 0.30
+          }
+        ],
+        "annual_credit": 12240,
+        "monthly_credit": 1020,
+        "effective_tax_free_income": 61200,
+        "monthly_band": 6480,
+        "status": "primary",
+        "source_ids": ["S3-LN24-2026", "S4-RSL-PIT-2026-27"]
+      }
+    ],
+    "credit_refundable": false,
+    "tax_formula": "max(0.20 * min(income, upper_20pct) + 0.30 * max(income - upper_20pct, 0) - annual_credit, 0)",
+    "business_income_note": "Individual business income is taxed at 20%/30% with the personal credit. The 25%/40% line in S128-I Part H line 3d applies only to specified property/non-resident/under-18 cases.",
+    "special_25_40_note": {
+      "rate_25": 0.25,
+      "rate_40": 0.40,
+      "applies_to": "S128-I Part H line 3d: property income of under-18 residents and other non-residents, plus s109 election cases",
+      "does_not_apply_to": "ordinary resident sole trader business income",
+      "source_ids": ["S20-S128-I-2023", "S1-ITA-1993"]
+    }
+  },
+  "corporate_income_tax": {
+    "rate_sets": [
+      {
+        "tax_year": "2026/27",
+        "effective_from": "2026-04-01",
+        "effective_to": null,
+        "currency": "LSL",
+        "categories": [
+          {
+            "id": "manufacturing",
+            "rate": 0.10,
+            "applies_to": "resident_company",
+            "status": "primary",
+            "source_ids": ["S1-ITA-1993", "S2-ITA-AMEND-2014", "S13-RSL-TAX-RATES"]
+          },
+          {
+            "id": "commercial_farming",
+            "rate": 0.10,
+            "applies_to": "person_undertaking_commercial_farming",
+            "status": "primary",
+            "source_ids": ["S1-ITA-1993", "S13-RSL-TAX-RATES"]
+          },
+          {
+            "id": "other_income",
+            "rate": 0.25,
+            "applies_to": "resident_company_and_lesotho_branch",
+            "status": "primary",
+            "source_ids": ["S1-ITA-1993", "S2-ITA-AMEND-2014"]
+          },
+          {
+            "id": "trustee_minor_fbt_electing_non_resident",
+            "rate": 0.40,
+            "applies_to": "specified_taxpayers",
+            "status": "primary",
+            "source_ids": ["S1-ITA-1993"]
+          }
+        ],
+        "manufacturing_concession_excludes_non_resident_branch": true,
+        "source_ids": ["S1-ITA-1993"]
+      }
+    ],
+    "export_manufacturing": {
+      "rate": 0.10,
+      "effective_from": "2014-04-01",
+      "status": "primary",
+      "source_ids": ["S2-ITA-AMEND-2014"],
+      "note": "The 0% extra-SACU export rate in the 2012 consolidated text was repealed. All manufacturing income is 10%."
+    },
+    "tax_formula": "manufacturing_income * 0.10 + commercial_farming_income * 0.10 + other_chargeable_income * 0.25 - credits_and_payments"
+  },
+  "partnership": {
+    "taxed_at_partner_level": true,
+    "information_return_form": "S128-P",
+    "allocation_basis": "partner_percentage_interest",
+    "loss_limitation": "adjusted_cost_base_of_partner_interest",
+    "status": "primary",
+    "source_ids": ["S1-ITA-1993"]
+  },
+  "vat": {
+    "rates": [
+      {
+        "id": "zero",
+        "rate": 0.00,
+        "applies_to": ["exports", "zero_rated_basic_food", "zero_rated_agricultural_inputs"],
+        "status": "primary",
+        "source_ids": ["S5-VAT-ACT-2001", "S6-VAT-REGS-2003"]
+      },
+      {
+        "id": "electricity",
+        "rate": 0.10,
+        "effective_from": "2021-04-01",
+        "status": "primary",
+        "source_ids": ["S9-LN30-2021", "S13-RSL-TAX-RATES"]
+      },
+      {
+        "id": "telecommunications",
+        "rate": 0.15,
+        "effective_from": "2020-04-01",
+        "status": "primary",
+        "source_ids": ["S8-LN18-2020", "S13-RSL-TAX-RATES"]
+      },
+      {
+        "id": "standard",
+        "rate": 0.15,
+        "effective_from": "2018-04-01",
+        "status": "primary",
+        "source_ids": ["S7-LN27-2018", "S13-RSL-TAX-RATES"]
+      }
+    ],
+    "standard_rate_history": [
+      {
+        "rate": 0.14,
+        "effective_to": "2018-03-31",
+        "status": "historical",
+        "source_ids": ["S7-LN27-2018"]
+      },
+      {
+        "rate": 0.15,
+        "effective_from": "2018-04-01",
+        "status": "primary",
+        "source_ids": ["S7-LN27-2018"]
+      }
+    ],
+    "registration": {
+      "compulsory_threshold": 2000000,
+      "currency": "LSL",
+      "measure": "annual_taxable_turnover",
+      "exclude_exempt_supplies": true,
+      "aggregate_legal_entity": true,
+      "voluntary_registration_allowed": true,
+      "status": "primary",
+      "source_ids": ["S10-LN69-2025", "S11-VAT-101", "S5-VAT-ACT-2001"]
+    },
+    "tax_period": {
+      "unit": "calendar_month",
+      "start": "first_day_of_month",
+      "end": "last_day_of_month",
+      "status": "primary",
+      "source_ids": ["S5-VAT-ACT-2001"]
+    },
+    "return": {
+      "form": "VAT-12",
+      "filing_days_after_period_end": 20,
+      "payment_due_same_as_return": true,
+      "status": "primary",
+      "source_ids": ["S5-VAT-ACT-2001", "S19-VAT-RETURN-12"]
+    },
+    "calculation": {
+      "formula": "output_tax - input_tax",
+      "input_tax_conditions": "valid VAT invoice; acquisition/import used in making taxable supplies; no input credit for exempt supplies; apportion mixed use",
+      "status": "primary",
+      "source_ids": ["S5-VAT-ACT-2001"]
+    },
+    "refunds": {
+      "quarterly_excess_refund_allowed": true,
+      "quarterly_application_days_after_quarter_end": 20,
+      "regular_excess_credit_refund_each_tax_period_allowed": true,
+      "other_refund_years_after_due": 4,
+      "calendar_quarters": ["2026-03-31", "2026-06-30", "2026-09-30", "2026-12-31"],
+      "status": "primary",
+      "source_ids": ["S5-VAT-ACT-2001"]
+    },
+    "accounting_method": {
+      "default": "invoice",
+      "cash_method_available": true,
+      "cash_method_conditions": "at least 90% of total taxable value consists of services; Commissioner approval required",
+      "status": "primary",
+      "source_ids": ["S5-VAT-ACT-2001"]
+    },
+    "zero_rated_examples": [
+      "maize meal",
+      "maize",
+      "beans",
+      "lentils",
+      "peas",
+      "sorghum meal",
+      "unmalted sorghum",
+      "wheat grain",
+      "wheat flour",
+      "paraffin for cooking, illuminating or heating",
+      "milk for domestic consumption",
+      "bread for domestic consumption",
+      "animal feeds",
+      "fertilisers",
+      "seeds",
+      "pesticides"
+    ],
+    "exempt_examples": [
+      "public postal services",
+      "passenger transportation services",
+      "medical and dental services",
+      "financial services",
+      "insurance services",
+      "education services",
+      "unimproved land",
+      "lease of immovable property to a manufacturer for manufacturing",
+      "water"
+    ],
+    "form_warning": "VAT-12 prints a 9% electricity line. Do not encode 9% as current; electricity is 10%."
+  },
+  "provisional_tax": {
+    "who_pays": ["companies", "individuals_carrying_on_business"],
+    "instalments": [
+      {
+        "number": 1,
+        "due_month": 9,
+        "due_day": 30,
+        "rate_of_prior_liability": 0.30
+      },
+      {
+        "number": 2,
+        "due_month": 12,
+        "due_day": 31,
+        "rate_of_prior_liability": 0.30
+      },
+      {
+        "number": 3,
+        "due_month": 3,
+        "due_day": 31,
+        "rate_of_prior_liability": 0.30
+      }
+    ],
+    "formula": "each_instalment = 0.30 * (A - B)",
+    "definitions": {
+      "A": "prior_year_tax_liability_after_foreign_tax_credit_before_ACT_setoff",
+      "B": "amount_of_A_paid_by_withholding_at_source_in_prior_year"
+    },
+    "substituted_company_period": "last_day_of_6th_9th_and_12th_month_after_period_start",
+    "status": "primary",
+    "source_ids": ["S1-ITA-1993"],
+    "guide_conflict": {
+      "guide_source_id": "S16-PROV-GUIDE-2018",
+      "issue": "Guide calls the instalments 'equal' but states each is 30% of prior-year liability; Act has no equalisation step.",
+      "resolution": "Use the Act formula."
+    }
+  },
+  "paye": {
+    "withholding": true,
+    "remittance_day_of_following_month": 15,
+    "status": "official-secondary",
+    "source_ids": ["S17-PAYE-GUIDE-2020"],
+    "annual_certificate": {
+      "form": "P16",
+      "days_after_year_end": 28,
+      "days_after_employment_ceases": 7,
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    }
+  },
+  "withholding_tax": {
+    "non_resident": [
+      {
+        "payment_types": ["dividend", "interest", "royalty", "natural_resource_payment", "management_charge"],
+        "rate": 0.25,
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      },
+      {
+        "payment_types": ["qualifying_manufacturing_interest", "qualifying_manufacturing_royalty", "qualifying_manufacturing_management_charge"],
+        "rate": 0.15,
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      },
+      {
+        "payment_types": ["non_resident_services_contract"],
+        "rate": 0.10,
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      },
+      {
+        "payment_types": ["non_resident_technical_services_from_RSA"],
+        "rate": 0.075,
+        "status": "official-secondary",
+        "source_ids": ["S13-RSL-TAX-RATES"],
+        "note": "Treaty-dependent; verify the applicable treaty."
+      }
+    ],
+    "resident_contractor": {
+      "rate": 0.05,
+      "threshold_per_month": 3000,
+      "exemptions": ["complying_contractor", "individual_principal_residence_improvement"],
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    "resident_interest": {
+      "rate": 0.10,
+      "payer": "resident_person_other_than_individual",
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    "final_tax_unless_section_109_election": true,
+    "remittance_day_of_following_month": 15,
+    "remittance_status": "open",
+    "remittance_source_ids": ["S15-REG-GUIDE-2017"],
+    "remittance_note": "ITA s166 delegates the time to regulations; the primary WHT regulation was not located."
+  },
+  "fringe_benefits_tax": {
+    "rate": 0.40,
+    "gross_up_formula": "A * (1 / (1 - 0.40))",
+    "return_periods": ["2026-06-30", "2026-09-30", "2026-12-31", "2027-03-31"],
+    "return_days_after_quarter_end": 14,
+    "status": "primary",
+    "source_ids": ["S1-ITA-1993", "S21-FBT1"],
+    "vehicle_formula": "(value_at_first_private_use * 0.15 * days_available / days_in_year) - employee_contribution",
+    "housing_formula": "lesser(market_rental, 0.20 * employee_remuneration) - employee_contribution"
+  },
+  "depreciation": {
+    "method": "declining_balance",
+    "groups": [
+      {
+        "group": 1,
+        "rate": 0.25,
+        "assets": ["automobiles", "taxis", "light_general_purpose_trucks", "over_the_road_tractors", "special_tools_and_devices"]
+      },
+      {
+        "group": 2,
+        "rate": 0.20,
+        "assets": ["office_furniture_fixtures_and_equipment", "computers_and_data_handling_equipment", "buses", "heavy_general_purpose_trucks", "trailers_and_containers", "construction_equipment"]
+      },
+      {
+        "group": 3,
+        "rate": 0.10,
+        "assets": ["any_depreciable_asset_not_in_another_group", "mineral_extraction_expenditure_recovered_as_group_3"]
+      },
+      {
+        "group": 4,
+        "rate": 0.05,
+        "assets": ["railroad_cars_locomotives_and_equipment", "vessels_barges_tugs_and_similar_water_transport", "industrial_buildings", "engines_and_turbines", "public_utility_plant"]
+      }
+    ],
+    "minor_asset_deduction_threshold": 50,
+    "minor_asset_threshold_note": "As printed in the consolidated Act; verify later monetary amendments.",
+    "no_mining_group_5": true,
+    "status": "primary",
+    "source_ids": ["S1-ITA-1993"]
+  },
+  "accounting_basis": {
+    "allowed": ["cash", "accrual"],
+    "mandatory_accrual_gross_income_threshold": 150000,
+    "mandatory_accrual_succeeding_years": true,
+    "individual_trustee_only_business_income": true,
+    "change_requires_commissioner_permission": true,
+    "status": "primary",
+    "source_ids": ["S1-ITA-1993"],
+    "threshold_note": "M150,000 as printed in the consolidated Act; no later amendment located."
+  },
+  "record_keeping": {
+    "income_tax": {
+      "location": "Lesotho",
+      "language": ["Sesotho", "English"],
+      "standard": "necessary for accurate determination of tax payable",
+      "retention": "as long as material in administering the Act",
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    "vat": {
+      "location": "Lesotho",
+      "language": ["Sesotho", "English"],
+      "records": ["original_vat_invoices_received", "copies_of_vat_invoices_issued", "credit_notes", "debit_notes", "customs_import_export_documents", "prescribed_accounts"],
+      "retention": "as long as material in administering the Act",
+      "status": "primary",
+      "source_ids": ["S5-VAT-ACT-2001"]
+    }
+  },
+  "penalties": {
+    "income_tax": [
+      {
+        "id": "specified_rate",
+        "provision": "s192",
+        "effect": "Commissioner General publishes specified rate based on normal commercial lending rates",
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      },
+      {
+        "id": "failure_to_file",
+        "provision": "s193",
+        "effect": "specified rate on tax payable from return due date",
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      },
+      {
+        "id": "failure_to_pay",
+        "provision": "s194",
+        "effect": "specified rate on deficiency from due date, including provisional instalments",
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      },
+      {
+        "id": "under_estimation",
+        "provision": "s195",
+        "effect": "specified rate on whole deficiency if estimate more than 10% below actual",
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      },
+      {
+        "id": "withholding_agent_failure",
+        "provision": "s196",
+        "effect": "specified rate on tax not withheld or not paid",
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      },
+      {
+        "id": "records_failure",
+        "provision": "s197",
+        "effect": "double the tax payable for the year",
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      },
+      {
+        "id": "false_statement",
+        "provision": "s198",
+        "effect": "double the excess tax",
+        "status": "primary",
+        "source_ids": ["S1-ITA-1993"]
+      }
+    ],
+    "vat": [
+      {
+        "id": "failure_to_register",
+        "provision": "s53",
+        "effect": "double VAT payable during unregistered period",
+        "status": "primary",
+        "source_ids": ["S5-VAT-ACT-2001"]
+      },
+      {
+        "id": "failure_to_file",
+        "provision": "s54",
+        "rate_per_month_or_part": 0.03,
+        "base": "VAT payable for the period",
+        "status": "primary",
+        "source_ids": ["S5-VAT-ACT-2001"]
+      },
+      {
+        "id": "failure_to_pay",
+        "provision": "s55",
+        "rate_per_month_or_part": 0.03,
+        "base": "unpaid VAT",
+        "status": "primary",
+        "source_ids": ["S5-VAT-ACT-2001"]
+      },
+      {
+        "id": "records_failure",
+        "provision": "s56",
+        "effect": "double VAT payable for the tax period",
+        "status": "primary",
+        "source_ids": ["S5-VAT-ACT-2001"]
+      },
+      {
+        "id": "false_statement",
+        "provision": "s57",
+        "effect": "double excess VAT",
+        "status": "primary",
+        "source_ids": ["S5-VAT-ACT-2001"]
+      }
+    ],
+    "e_invoicing": {
+      "status": "primary",
+      "source_ids": ["S12-LN25-2026-EINVOICE"],
+      "fixed_penalty_amounts": [50000, 100000, 200000, 300000],
+      "note": "Exact penalty depends on the listed offence in Schedule V; do not treat as a flat range."
+    }
+  },
+  "deadlines": [
+    {
+      "id": "individual_income_tax_return",
+      "obligation": "Individual income tax return and final payment",
+      "form": "S128-I",
+      "due_rule": "last day of third month after year end",
+      "standard_due_date": "2027-06-30",
+      "recurrence": "annual",
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    {
+      "id": "company_income_tax_return",
+      "obligation": "Company income tax return and final payment",
+      "form": "S128-C",
+      "due_rule": "last day of third month after year end; substituted period permitted",
+      "standard_due_date": "2027-06-30",
+      "recurrence": "annual",
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    {
+      "id": "partnership_return",
+      "obligation": "Partnership information return",
+      "form": "S128-P",
+      "due_rule": "last day of third month after year end",
+      "standard_due_date": "2027-06-30",
+      "recurrence": "annual",
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    {
+      "id": "provisional_tax",
+      "obligation": "Provisional tax instalments",
+      "form": null,
+      "due_rule": "30 September, 31 December, 31 March; substituted company: 6th, 9th, 12th month after start",
+      "standard_due_dates": ["2026-09-30", "2026-12-31", "2027-03-31"],
+      "recurrence": "three_per_year",
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    {
+      "id": "vat_return",
+      "obligation": "VAT return and payment",
+      "form": "VAT-12",
+      "due_rule": "within 20 days after end of monthly tax period",
+      "recurrence": "monthly",
+      "status": "primary",
+      "source_ids": ["S5-VAT-ACT-2001"]
+    },
+    {
+      "id": "paye_remittance",
+      "obligation": "PAYE remittance",
+      "form": null,
+      "due_rule": "15th of month following month of deduction",
+      "recurrence": "monthly",
+      "status": "official-secondary",
+      "source_ids": ["S17-PAYE-GUIDE-2020"]
+    },
+    {
+      "id": "wht_remittance",
+      "obligation": "Withholding tax remittance",
+      "form": null,
+      "due_rule": "15th of following month (secondary pending primary regulation)",
+      "recurrence": "monthly",
+      "status": "open",
+      "source_ids": ["S15-REG-GUIDE-2017", "S1-ITA-1993"]
+    },
+    {
+      "id": "fbt_return",
+      "obligation": "Fringe benefits tax return",
+      "form": "FBT1",
+      "due_rule": "within 14 days after quarter end",
+      "quarter_end_dates": ["2026-06-30", "2026-09-30", "2026-12-31", "2027-03-31"],
+      "recurrence": "quarterly",
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    {
+      "id": "p16_certificate",
+      "obligation": "Employee tax withholding certificate",
+      "form": "P16",
+      "due_rule": "28 days after year end; 7 days after employment ceases",
+      "recurrence": "annual_or_event",
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    {
+      "id": "wht_annual_statement",
+      "obligation": "Annual WHT statement",
+      "form": null,
+      "due_rule": "within 28 days after year end",
+      "recurrence": "annual",
+      "status": "primary",
+      "source_ids": ["S1-ITA-1993"]
+    },
+    {
+      "id": "vat_quarterly_refund_application",
+      "obligation": "VAT quarterly excess credit refund application",
+      "form": "VAT-12",
+      "due_rule": "within 20 days after calendar quarter end",
+      "recurrence": "quarterly",
+      "status": "primary",
+      "source_ids": ["S5-VAT-ACT-2001"]
+    }
+  ],
+  "e_invoicing": {
+    "instrument": "Value Added Tax (E-Invoicing) Regulations, 2026",
+    "reference": "Legal Notice No. 25 of 2026",
+    "commencement": "2026-04-01",
+    "application_note": "Commissioner General may require a vendor by Gazette notice to use an EBS.",
+    "architecture": ["IDMS", "EBS"],
+    "one_ebs_per_business_activity": true,
+    "accreditation_required": true,
+    "digital_certificate_required": true,
+    "qr_code_required": true,
+    "invoice_particulars_include": [
+      "VAT Act invoice particulars",
+      "method_of_payment",
+      "transaction_type",
+      "issuer_name",
+      "sequential_invoice_number",
+      "EBS_IDMS_serial_number",
+      "digital_signature",
+      "QR_code"
+    ],
+    "grace_period": {
+      "reported_end": "2026-10-30",
+      "status": "open",
+      "source_note": "Secondary implementation notices only."
+    },
+    "enforcement": {
+      "reported_start": "2026-11-01",
+      "status": "open",
+      "source_note": "Secondary implementation notices only."
+    }
+  },
+  "open_question_ids": [
+    "UQ-001",
+    "UQ-002",
+    "UQ-003",
+    "UQ-004",
+    "UQ-005",
+    "UQ-006",
+    "UQ-007",
+    "UQ-008",
+    "UQ-009",
+    "UQ-010",
+    "UQ-011",
+    "UQ-012"
+  ]
+}

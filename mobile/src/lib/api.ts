@@ -24,6 +24,12 @@ import type {
   StockMovementType,
   TokenPair,
   TrialBalance,
+  TaxCalculation,
+  TaxDeadline,
+  TaxFiling,
+  TaxReturn,
+  TaxAccountingSummary,
+  TaxWarning,
   User,
 } from './types';
 import {
@@ -311,9 +317,13 @@ export interface JournalEntryInput {
 
 export const api = {
   auth: {
-    register: (payload: { email: string; full_name: string; password: string }) =>
-      request<User>('/auth/register', { method: 'POST', body: payload, auth: false }),
-    login: (payload: { email: string; password: string }) =>
+    register: (payload: {
+      email?: string;
+      phone_number?: string;
+      full_name: string;
+      password: string;
+    }) => request<User>('/auth/register', { method: 'POST', body: payload, auth: false }),
+    login: (payload: { identifier: string; password: string }) =>
       request<TokenPair>('/auth/login', { method: 'POST', body: payload, auth: false }),
     me: () => request<User>('/auth/me'),
     logout: (refresh: string) =>
@@ -464,6 +474,43 @@ export const api = {
           end_date: endDate,
         })}`,
       ),
+  },
+  tax: {
+    summary: (businessId: string, start: string, end: string) =>
+      request<TaxAccountingSummary>(
+        `/businesses/${businessId}/tax/summaries${queryString({ start, end })}`,
+      ),
+    calculation: (businessId: string, taxType: string, start: string, end: string) =>
+      request<TaxCalculation>(
+        `/businesses/${businessId}/tax/calculations${queryString({ tax_type: taxType, start, end })}`,
+      ),
+    deadlines: (businessId: string, taxType = 'income_tax', count = 4) =>
+      request<{ tax_type: string; rule_version: string | null; deadlines: TaxDeadline[] }>(
+        `/businesses/${businessId}/tax/deadlines${queryString({ tax_type: taxType, count })}`,
+      ),
+    returns: (businessId: string, limit = 20) =>
+      request<TaxReturn[]>(`/businesses/${businessId}/tax/returns${queryString({ limit })}`),
+    generate: (businessId: string, taxType: string, start: string, end: string) =>
+      request<TaxReturn>(`/businesses/${businessId}/tax/returns`, {
+        method: 'POST',
+        body: { tax_type: taxType, reporting_start: start, reporting_end: end },
+      }),
+    validate: (businessId: string, returnId: string) =>
+      request<{ return_id: string; status: string; validation: TaxCalculation['validation']; warnings: TaxWarning[] }>(
+        `/businesses/${businessId}/tax/returns/${returnId}/validate`,
+        { method: 'POST' },
+      ),
+    approve: (businessId: string, returnId: string) =>
+      request<TaxReturn>(`/businesses/${businessId}/tax/returns/${returnId}/approve`, { method: 'POST' }),
+    portal: (businessId: string) =>
+      request<{ url: string; automated: boolean; notice: string }>(`/businesses/${businessId}/tax/filing-portal`),
+    handoff: (businessId: string, returnId: string) =>
+      request<{ filing: TaxFiling; automated: boolean; notice: string }>(
+        `/businesses/${businessId}/tax/returns/${returnId}/filing-handoff`,
+        { method: 'POST' },
+      ),
+    filings: (businessId: string, limit = 20) =>
+      request<TaxFiling[]>(`/businesses/${businessId}/tax/filings${queryString({ limit })}`),
   },
   reminders: {
     list: (businessId: string, includeInactive = false) =>

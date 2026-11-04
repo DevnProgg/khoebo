@@ -71,21 +71,30 @@ def user_factory(client: TestClient):
         email: str | None = None,
         password: str = "Password123",
         full_name: str = "Test User",
+        phone_number: str | None = None,
     ) -> dict:
-        email = email or f"user-{uuid.uuid4().hex[:12]}@example.com"
+        if email is None and phone_number is None:
+            email = f"user-{uuid.uuid4().hex[:12]}@example.com"
         register = client.post(
             "/api/v1/auth/register",
-            json={"email": email, "full_name": full_name, "password": password},
+            json={
+                "email": email,
+                "phone_number": phone_number,
+                "full_name": full_name,
+                "password": password,
+            },
         )
         assert register.status_code == 201, register.text
+        identifier = email or phone_number
         login = client.post(
-            "/api/v1/auth/login", json={"email": email, "password": password}
+            "/api/v1/auth/login", json={"identifier": identifier, "password": password}
         )
         assert login.status_code == 200, login.text
         tokens = login.json()
         return {
             "id": register.json()["id"],
             "email": email,
+            "phone_number": phone_number,
             "password": password,
             "full_name": full_name,
             "access_token": tokens["access_token"],

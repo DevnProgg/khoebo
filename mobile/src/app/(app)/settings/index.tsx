@@ -38,7 +38,7 @@ export default function SettingsScreen() {
               {user?.full_name}
             </Text>
             <Text style={styles.email} numberOfLines={1}>
-              {user?.email}
+              {user?.email ?? user?.phone_number}
             </Text>
             <View style={styles.badges}>
               {role ? <Badge label={titleCase(role)} tone="primary" /> : null}

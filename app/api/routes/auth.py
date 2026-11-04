@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, _unauthorized
 from app.core.config import settings
+from app.core.identity import looks_like_email, normalize_phone
 from app.core.security import (
     create_access_token,
     create_refresh_token,
@@ -49,12 +50,20 @@ def _issue_tokens(db: Session, user: User) -> TokenPair:
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> User:
-    email = payload.email.lower()
-    if db.scalar(select(User.id).where(User.email == email)) is not None:
+    email = str(payload.email).lower() if payload.email is not None else None
+    phone_number = payload.phone_number
+    if email and db.scalar(select(User.id).where(User.email == email)) is not None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email is already registered")
+    if phone_number and db.scalar(
+        select(User.id).where(User.phone_number == phone_number)
+    ) is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Phone number is already registered"
+        )
 
     user = User(
         email=email,
+        phone_number=phone_number,
         full_name=payload.full_name.strip(),
         hashed_password=hash_password(payload.password),
     )
@@ -64,17 +73,27 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> User:
     except IntegrityError:
         db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Email is already registered"
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email or phone number is already registered",
         ) from None
     db.refresh(user)
     return user
 
 
+def _user_for_identifier(db: Session, identifier: str) -> User | None:
+    if looks_like_email(identifier):
+        return db.scalar(select(User).where(User.email == identifier.lower()))
+    phone_number = normalize_phone(identifier)
+    if phone_number is None:
+        return None
+    return db.scalar(select(User).where(User.phone_number == phone_number))
+
+
 @router.post("/login", response_model=TokenPair)
 def login(payload: LoginRequest, db: Session = Depends(get_db)) -> TokenPair:
-    user = db.scalar(select(User).where(User.email == payload.email.lower()))
+    user = _user_for_identifier(db, payload.identifier)
     if user is None or not verify_password(payload.password, user.hashed_password):
-        raise _unauthorized("Incorrect email or password")
+        raise _unauthorized("Incorrect email, phone number or password")
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is deactivated")
 

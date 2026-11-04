@@ -38,6 +38,92 @@ def test_register_login_and_me(client: TestClient, session_factory: sessionmaker
     assert me.json()["email"] == email
 
 
+def test_phone_only_registration_and_login(client: TestClient) -> None:
+    phone = f"+266 58{ uuid.uuid4().int % 10**7 :07d}"
+    register = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "",
+            "phone_number": phone,
+            "full_name": "Phone Only",
+            "password": "Password123",
+        },
+    )
+    assert register.status_code == 201, register.text
+    body = register.json()
+    assert body["email"] is None
+    assert body["phone_number"] == phone.replace("+", "").replace(" ", "")
+
+    login = client.post(
+        "/api/v1/auth/login",
+        json={"identifier": phone, "password": "Password123"},
+    )
+    assert login.status_code == 200, login.text
+    me = client.get(
+        "/api/v1/auth/me",
+        headers={"Authorization": f"Bearer {login.json()['access_token']}"},
+    )
+    assert me.status_code == 200
+    assert me.json()["email"] is None
+    assert me.json()["phone_number"] == body["phone_number"]
+
+
+def test_email_and_phone_can_both_be_registered(client: TestClient) -> None:
+    email = f"both-{uuid.uuid4().hex[:8]}@example.com"
+    phone = f"26659{uuid.uuid4().int % 10**7:07d}"
+    register = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": email,
+            "phone_number": phone,
+            "full_name": "Both Contacts",
+            "password": "Password123",
+        },
+    )
+    assert register.status_code == 201, register.text
+    assert register.json()["email"] == email
+    assert register.json()["phone_number"] == phone
+
+    for identifier in (email, phone):
+        login = client.post(
+            "/api/v1/auth/login",
+            json={"identifier": identifier, "password": "Password123"},
+        )
+        assert login.status_code == 200, (identifier, login.text)
+
+
+def test_registration_requires_a_contact_method(client: TestClient) -> None:
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "",
+            "phone_number": "",
+            "full_name": "No Contact",
+            "password": "Password123",
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_duplicate_phone_registration_conflicts(client: TestClient) -> None:
+    phone = f"26660{uuid.uuid4().int % 10**7:07d}"
+    payload = {
+        "phone_number": phone,
+        "full_name": "Phone Dupe",
+        "password": "Password123",
+    }
+    assert client.post("/api/v1/auth/register", json=payload).status_code == 201
+    duplicate = client.post(
+        "/api/v1/auth/register",
+        json={
+            "phone_number": f"+{phone[:3]} {phone[3:6]} {phone[6:]}",
+            "full_name": "Phone Dupe",
+            "password": "Password123",
+        },
+    )
+    assert duplicate.status_code == 409
+
+
 def test_duplicate_registration_conflicts(client: TestClient) -> None:
     email = f"dupe-{uuid.uuid4().hex[:8]}@example.com"
     payload = {"email": email, "full_name": "Dupe", "password": "Password123"}

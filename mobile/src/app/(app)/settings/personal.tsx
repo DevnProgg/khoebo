@@ -55,7 +55,7 @@ export default function PersonalInfoScreen() {
           <Card style={styles.profile}>
             <Avatar name={fullName || 'K'} size={64} />
             <Text style={styles.name}>{fullName || t('yourName')}</Text>
-            <Text style={styles.email}>{user?.email}</Text>
+            <Text style={styles.email}>{user?.email ?? user?.phone_number}</Text>
           </Card>
         </Reveal>
 
@@ -70,16 +70,30 @@ export default function PersonalInfoScreen() {
             textContentType="name"
           />
 
-          <View style={styles.readonly}>
-            <View style={styles.readonlyIcon}>
-              <Ionicons name="mail-outline" size={18} color={colors.inkMuted} />
+          {user?.email ? (
+            <View style={styles.readonly}>
+              <View style={styles.readonlyIcon}>
+                <Ionicons name="mail-outline" size={18} color={colors.inkMuted} />
+              </View>
+              <View style={styles.flex}>
+                <Text style={styles.readonlyLabel}>{t('emailAddress')}</Text>
+                <Text style={styles.readonlyValue}>{user.email}</Text>
+              </View>
+              <Ionicons name="lock-closed-outline" size={16} color={colors.inkMuted} />
             </View>
-            <View style={styles.flex}>
-              <Text style={styles.readonlyLabel}>{t('emailAddress')}</Text>
-              <Text style={styles.readonlyValue}>{user?.email}</Text>
+          ) : null}
+          {user?.phone_number ? (
+            <View style={styles.readonly}>
+              <View style={styles.readonlyIcon}>
+                <Ionicons name="call-outline" size={18} color={colors.inkMuted} />
+              </View>
+              <View style={styles.flex}>
+                <Text style={styles.readonlyLabel}>{t('phoneNumber')}</Text>
+                <Text style={styles.readonlyValue}>{user.phone_number}</Text>
+              </View>
+              <Ionicons name="lock-closed-outline" size={16} color={colors.inkMuted} />
             </View>
-            <Ionicons name="lock-closed-outline" size={16} color={colors.inkMuted} />
-          </View>
+          ) : null}
           <Text style={styles.helper}>
             {t('emailLocked')}
           </Text>

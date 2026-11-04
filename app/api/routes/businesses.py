@@ -42,6 +42,7 @@ def _member_out(membership: BusinessMember) -> MemberOut:
     return MemberOut(
         user_id=membership.user_id,
         email=membership.user.email,
+        phone_number=membership.user.phone_number,
         full_name=membership.user.full_name,
         role=membership.role,
         joined_at=membership.created_at,

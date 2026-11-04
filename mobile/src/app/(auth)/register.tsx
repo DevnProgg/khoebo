@@ -13,6 +13,7 @@ export default function RegisterScreen() {
   const { register } = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,8 +26,19 @@ export default function RegisterScreen() {
       setError('Tell us your name.');
       return;
     }
-    if (!email.trim()) {
-      setError('Enter your email address.');
+    const trimmedEmail = email.trim();
+    const trimmedPhone = phoneNumber.trim();
+    if (!trimmedEmail && !trimmedPhone) {
+      setError('Add your email or phone number.');
+      return;
+    }
+    if (trimmedEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmedEmail)) {
+      setError('Enter a valid email address.');
+      return;
+    }
+    const phoneDigits = trimmedPhone.replace(/\D/g, '');
+    if (trimmedPhone && (phoneDigits.length < 7 || phoneDigits.length > 15)) {
+      setError('Enter a valid phone number.');
       return;
     }
     if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
@@ -39,7 +51,12 @@ export default function RegisterScreen() {
     }
     setLoading(true);
     try {
-      await register(fullName, email, password);
+      await register({
+        fullName,
+        email: trimmedEmail || undefined,
+        phoneNumber: trimmedPhone || undefined,
+        password,
+      });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Could not create your account.');
     } finally {
@@ -77,7 +94,7 @@ export default function RegisterScreen() {
             textContentType="name"
           />
           <TextField
-            label="Email"
+            label="Email or business email"
             icon="mail-outline"
             placeholder="you@business.com"
             value={email}
@@ -88,6 +105,24 @@ export default function RegisterScreen() {
             autoComplete="email"
             textContentType="emailAddress"
           />
+          <TextField
+            label="Phone number"
+            icon="call-outline"
+            placeholder="+266 5800 0000"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="phone-pad"
+            autoComplete="tel"
+            textContentType="telephoneNumber"
+          />
+          <View style={styles.hint}>
+            <Ionicons name="information-circle-outline" size={15} color={colors.inkMuted} />
+            <Text style={styles.hintText}>
+              Add at least one contact: an email or a phone number.
+            </Text>
+          </View>
           <TextField
             label="Password"
             icon="lock-closed-outline"

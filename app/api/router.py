@@ -9,6 +9,7 @@ from app.api.routes import (
     reminders,
     reports,
     sales,
+    tax,
     users,
 )
 
@@ -22,3 +23,4 @@ api_router.include_router(accounting.router)
 api_router.include_router(reports.router)
 api_router.include_router(analytics.router)
 api_router.include_router(reminders.router)
+api_router.include_router(tax.router)

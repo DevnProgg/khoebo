@@ -13,7 +13,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const { signIn } = useAuth();
   const { t } = useLanguage();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,13 +21,13 @@ export default function LoginScreen() {
   const submit = async () => {
     Keyboard.dismiss();
     setError(null);
-    if (!email.trim() || !password) {
-      setError(`${t('email')} & ${t('password')} required.`);
+    if (!identifier.trim() || !password) {
+      setError(`${t('emailOrPhone')} & ${t('password')} required.`);
       return;
     }
     setLoading(true);
     try {
-      await signIn(email, password);
+      await signIn(identifier, password);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('couldNotSignIn'));
     } finally {
@@ -59,16 +59,16 @@ export default function LoginScreen() {
 
         <View style={styles.form}>
           <TextField
-            label={t('email')}
-            icon="mail-outline"
-            placeholder="you@business.com"
-            value={email}
-            onChangeText={setEmail}
+            label={t('emailOrPhone')}
+            icon="person-circle-outline"
+            placeholder="you@business.com or +266 5800 0000"
+            value={identifier}
+            onChangeText={setIdentifier}
             autoCapitalize="none"
             autoCorrect={false}
-            keyboardType="email-address"
-            autoComplete="email"
-            textContentType="emailAddress"
+            keyboardType="default"
+            autoComplete="username"
+            textContentType="username"
           />
           <TextField
             label={t('password')}

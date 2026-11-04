@@ -295,3 +295,18 @@ def test_deleting_business_cascades_data(
             count = session.scalar(select(func.count()).select_from(model))
             assert count == 0, model.__name__
         assert session.scalar(select(func.count()).select_from(User)) == 1
+
+
+def test_phone_only_owner_appears_in_member_list(
+    client: TestClient, user_factory, business_factory
+) -> None:
+    owner = user_factory(phone_number="+266 5712 3456")
+    business = business_factory(owner)
+
+    members = client.get(
+        f"/api/v1/businesses/{business['id']}/members", headers=owner["headers"]
+    )
+    assert members.status_code == 200
+    row = members.json()[0]
+    assert row["email"] is None
+    assert row["phone_number"] == "26657123456"

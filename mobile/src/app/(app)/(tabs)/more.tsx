@@ -42,7 +42,7 @@ export default function MoreScreen() {
               {user?.full_name}
             </Text>
             <Text style={styles.profileEmail} numberOfLines={1}>
-              {user?.email}
+              {user?.email ?? user?.phone_number}
             </Text>
             <View style={styles.profileBadges}>
               {role ? <Badge label={titleCase(role)} tone="primary" /> : null}

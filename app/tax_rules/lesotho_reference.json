@@ -1,0 +1,157 @@
+{
+  "jurisdiction": "LS",
+  "rules": [
+    {
+      "tax_type": "income_tax",
+      "taxpayer_type": "individual",
+      "version": "LS-IT-IND-2025.1",
+      "effective_from": "2025-04-01",
+      "effective_to": "2026-03-31",
+      "source_ids": ["S1-ITA-1993", "S3-LN24-2026"],
+      "rules": {
+        "currency": "LSL",
+        "credit_refundable": false,
+        "personal_credit": "11640",
+        "brackets": [
+          {"lower": "0", "upper": "74040", "rate": "0.20"},
+          {"lower": "74040", "upper": null, "rate": "0.30"}
+        ]
+      }
+    },
+    {
+      "tax_type": "income_tax",
+      "taxpayer_type": "individual",
+      "version": "LS-IT-IND-2026.1",
+      "effective_from": "2026-04-01",
+      "effective_to": "2027-03-31",
+      "source_ids": ["S1-ITA-1993", "S3-LN24-2026", "S4-RSL-PIT-2026-27"],
+      "rules": {
+        "currency": "LSL",
+        "credit_refundable": false,
+        "personal_credit": "12240",
+        "brackets": [
+          {"lower": "0", "upper": "77760", "rate": "0.20"},
+          {"lower": "77760", "upper": null, "rate": "0.30"}
+        ]
+      }
+    },
+    {
+      "tax_type": "income_tax",
+      "taxpayer_type": "company",
+      "version": "LS-CIT-2025.1",
+      "effective_from": "2025-04-01",
+      "effective_to": "2026-03-31",
+      "source_ids": ["S1-ITA-1993", "S2-ITA-AMEND-2014", "S13-RSL-TAX-RATES"],
+      "rules": {
+        "currency": "LSL",
+        "categories": {
+          "manufacturing": {"rate": "0.10", "eligible_taxpayer_types": ["company"]},
+          "commercial_farming": {"rate": "0.10", "eligible_taxpayer_types": ["company"]},
+          "other": {"rate": "0.25", "eligible_taxpayer_types": ["company", "non_resident_company"]}
+        }
+      }
+    },
+    {
+      "tax_type": "income_tax",
+      "taxpayer_type": "company",
+      "version": "LS-CIT-2026.1",
+      "effective_from": "2026-04-01",
+      "effective_to": "2027-03-31",
+      "source_ids": ["S1-ITA-1993", "S2-ITA-AMEND-2014", "S13-RSL-TAX-RATES"],
+      "rules": {
+        "currency": "LSL",
+        "categories": {
+          "manufacturing": {"rate": "0.10", "eligible_taxpayer_types": ["company"]},
+          "commercial_farming": {"rate": "0.10", "eligible_taxpayer_types": ["company"]},
+          "other": {"rate": "0.25", "eligible_taxpayer_types": ["company", "non_resident_company"]}
+        }
+      }
+    },
+    {
+      "tax_type": "income_tax",
+      "taxpayer_type": "partnership",
+      "version": "LS-IT-PART-2026.1",
+      "effective_from": "2026-04-01",
+      "effective_to": "2027-03-31",
+      "source_ids": ["S1-ITA-1993"],
+      "rules": {
+        "currency": "LSL",
+        "informational": true,
+        "allocation_required": true,
+        "partner_rates": "individual"
+      }
+    },
+    {
+      "tax_type": "vat",
+      "taxpayer_type": null,
+      "version": "LS-VAT-2025.1",
+      "effective_from": "2025-04-01",
+      "effective_to": "2026-03-31",
+      "source_ids": ["S5-VAT-ACT-2001", "S10-LN69-2025", "S13-RSL-TAX-RATES"],
+      "rules": {
+        "currency": "LSL",
+        "standard_rate": "0.15",
+        "registration_threshold": "2000000",
+        "return_due_days": 20,
+        "rates": {
+          "standard": "0.15",
+          "electricity": "0.10",
+          "telecommunications": "0.15",
+          "zero": "0.00"
+        }
+      }
+    },
+    {
+      "tax_type": "vat",
+      "taxpayer_type": null,
+      "version": "LS-VAT-2026.1",
+      "effective_from": "2026-04-01",
+      "effective_to": "2027-03-31",
+      "source_ids": ["S5-VAT-ACT-2001", "S10-LN69-2025", "S13-RSL-TAX-RATES"],
+      "rules": {
+        "currency": "LSL",
+        "standard_rate": "0.15",
+        "registration_threshold": "2000000",
+        "return_due_days": 20,
+        "rates": {
+          "standard": "0.15",
+          "electricity": "0.10",
+          "telecommunications": "0.15",
+          "zero": "0.00"
+        }
+      }
+    },
+    {
+      "tax_type": "provisional",
+      "taxpayer_type": null,
+      "version": "LS-PROV-2025.1",
+      "effective_from": "2025-04-01",
+      "effective_to": "2026-03-31",
+      "source_ids": ["S1-ITA-1993", "S16-PROV-GUIDE-2018"],
+      "rules": {
+        "currency": "LSL",
+        "instalments": [
+          {"number": 1, "due_month": 9, "due_day": 30, "rate_of_prior_liability": "0.30"},
+          {"number": 2, "due_month": 12, "due_day": 31, "rate_of_prior_liability": "0.30"},
+          {"number": 3, "due_month": 3, "due_day": 31, "rate_of_prior_liability": "0.30"}
+        ]
+      }
+    },
+    {
+      "tax_type": "provisional",
+      "taxpayer_type": null,
+      "version": "LS-PROV-2026.1",
+      "effective_from": "2026-04-01",
+      "effective_to": "2027-03-31",
+      "source_ids": ["S1-ITA-1993", "S16-PROV-GUIDE-2018"],
+      "rules": {
+        "currency": "LSL",
+        "instalments": [
+          {"number": 1, "due_month": 9, "due_day": 30, "rate_of_prior_liability": "0.30"},
+          {"number": 2, "due_month": 12, "due_day": 31, "rate_of_prior_liability": "0.30"},
+          {"number": 3, "due_month": 3, "due_day": 31, "rate_of_prior_liability": "0.30"}
+        ]
+      }
+    }
+  ]
+}

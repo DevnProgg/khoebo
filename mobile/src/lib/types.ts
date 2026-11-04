@@ -8,10 +8,12 @@ export type AccountType = 'asset' | 'liability' | 'equity' | 'revenue' | 'expens
 export type StockMovementType = 'in' | 'out' | 'adjustment';
 export type ReminderType = 'low_stock' | 'record_sales' | 'inventory_count' | 'custom';
 export type ReminderFrequency = 'once' | 'daily' | 'weekly' | 'monthly';
+export type TaxReturnStatus = 'validated' | 'flagged' | 'approved' | 'filed';
 
 export interface User {
   id: ID;
-  email: string;
+  email: string | null;
+  phone_number: string | null;
   full_name: string;
   is_active: boolean;
   is_superuser: boolean;
@@ -35,7 +37,8 @@ export interface Business {
 
 export interface Member {
   user_id: ID;
-  email: string;
+  email: string | null;
+  phone_number: string | null;
   full_name: string;
   role: MemberRole;
   joined_at: string;
@@ -227,6 +230,76 @@ export interface IncomeStatement {
   total_revenue: Decimal;
   total_expenses: Decimal;
   net_income: Decimal;
+}
+
+export interface TaxAccountingSummary {
+  currency: string;
+  period: { start: string; end: string };
+  revenue: Decimal;
+  discounts: Decimal;
+  cost_of_goods_sold: Decimal;
+  gross_profit: Decimal;
+  expenses: Decimal;
+  operating_expenses: Decimal;
+  net_profit: Decimal;
+  sales: { count: number; gross: Decimal; net: Decimal; tax: Decimal; output_tax: Decimal };
+  purchases: { count: number; net: Decimal; tax: Decimal; total: Decimal };
+  ledger: { balanced: boolean; total_debit: Decimal; total_credit: Decimal };
+  warnings: TaxWarning[];
+}
+
+export interface TaxWarning {
+  code: string;
+  message: string;
+  severity: string;
+}
+
+export interface TaxCalculation {
+  id: string | null;
+  tax_type: string;
+  taxpayer_type: string;
+  reporting_period: { start: string; end: string };
+  statutory_period: { start: string; end: string };
+  rule_version: string;
+  rule: { version?: string; source_ids?: string[] };
+  status: TaxReturnStatus;
+  accounting_figures: TaxAccountingSummary;
+  tax_liability: { tax?: Decimal; tax_before_credits?: Decimal; net_vat?: Decimal; output_tax?: Decimal; input_tax?: Decimal };
+  payments_and_credits: { balance_due?: Decimal; refund_due?: Decimal; total_paid?: Decimal };
+  warnings: TaxWarning[];
+  validation: { status: string; ledger_balanced: boolean; tax_calculated: boolean; issues: TaxWarning[] };
+  input_hash: string;
+  calculation_hash: string;
+}
+
+export interface TaxDeadline {
+  label: string;
+  reporting_start: string;
+  reporting_end: string;
+  statutory_start: string;
+  statutory_end: string;
+  due_date?: string;
+  due_dates?: string[];
+  status: string;
+}
+
+export interface TaxReturn extends TaxCalculation {
+  id: string;
+  created_at: string | null;
+}
+
+export interface TaxFiling {
+  id: string;
+  business_id: string;
+  tax_return_id: string;
+  channel: string;
+  status: string;
+  external_reference: string | null;
+  portal_url: string | null;
+  filed_at: string | null;
+  confirmed_at: string | null;
+  notes: string | null;
+  created_at: string;
 }
 
 export interface InventoryValuationItem {

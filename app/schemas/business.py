@@ -30,7 +30,8 @@ class BusinessOut(ORMModel):
 
 class MemberOut(BaseModel):
     user_id: uuid.UUID
-    email: EmailStr
+    email: EmailStr | None
+    phone_number: str | None
     full_name: str
     role: MemberRole
     joined_at: datetime

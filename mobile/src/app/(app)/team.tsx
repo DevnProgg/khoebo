@@ -178,7 +178,7 @@ export default function TeamScreen() {
                     {isSelf ? <Badge label={t('you')} tone="neutral" /> : null}
                   </View>
                   <Text style={styles.memberEmail} numberOfLines={1}>
-                    {member.email}
+                    {member.email ?? member.phone_number}
                   </Text>
                 </View>
                 <Badge

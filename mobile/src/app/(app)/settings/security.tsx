@@ -26,9 +26,10 @@ export default function SecurityScreen() {
   const change = useMutation({
     mutationFn: async () => {
       await api.auth.changePassword({ current_password: current, new_password: next });
-      if (user?.email) {
+      const identifier = user?.email ?? user?.phone_number;
+      if (identifier) {
         try {
-          await signIn(user.email, next);
+          await signIn(identifier, next);
         } catch {
           toast.show(t('passwordChanged'), 'info');
         }

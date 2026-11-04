@@ -26,8 +26,13 @@ interface AuthContextValue {
   user: User | null;
   businesses: Business[];
   business: Business | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  register: (fullName: string, email: string, password: string) => Promise<void>;
+  signIn: (identifier: string, password: string) => Promise<void>;
+  register: (input: {
+    fullName: string;
+    email?: string;
+    phoneNumber?: string;
+    password: string;
+  }) => Promise<void>;
   signOut: () => Promise<void>;
   refreshBusinesses: () => Promise<Business[]>;
   createBusiness: (input: { name: string; currency: string }) => Promise<Business>;
@@ -96,8 +101,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [bootstrap, resetSession]);
 
   const signIn = useCallback(
-    async (email: string, password: string) => {
-      const pair = await api.auth.login({ email: email.trim(), password });
+    async (identifier: string, password: string) => {
+      const pair = await api.auth.login({ identifier: identifier.trim(), password });
       await storeTokens(pair);
       const [me, list] = await Promise.all([api.auth.me(), api.businesses.list()]);
       queryClient.clear();
@@ -108,9 +113,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const register = useCallback(
-    async (fullName: string, email: string, password: string) => {
-      await api.auth.register({ full_name: fullName.trim(), email: email.trim(), password });
-      await signIn(email, password);
+    async (input: {
+      fullName: string;
+      email?: string;
+      phoneNumber?: string;
+      password: string;
+    }) => {
+      const email = input.email?.trim() || undefined;
+      const phoneNumber = input.phoneNumber?.trim() || undefined;
+      await api.auth.register({
+        full_name: input.fullName.trim(),
+        email,
+        phone_number: phoneNumber,
+        password: input.password,
+      });
+      await signIn(email ?? phoneNumber ?? '', input.password);
     },
     [signIn],
   );
