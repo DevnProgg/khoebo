@@ -19,6 +19,7 @@ export default function RegisterScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [businessName, setBusinessName] = useState('');
   const [uiMode, setUiMode] = useState<UiMode>('simple');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +62,7 @@ export default function RegisterScreen() {
         phoneNumber: trimmedPhone || undefined,
         password,
         uiMode,
+        businessName: businessName.trim() || undefined,
       });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Could not create your account.');
@@ -128,6 +130,15 @@ export default function RegisterScreen() {
               Add at least one contact: an email or a phone number.
             </Text>
           </View>
+
+          <TextField
+            label={t('businessOrShopName')}
+            icon="storefront-outline"
+            placeholder={t('businessOrShopPlaceholder')}
+            value={businessName}
+            onChangeText={setBusinessName}
+            autoCapitalize="words"
+          />
 
           <View style={styles.modeSection}>
             <Text style={styles.modeTitle}>{t('modeTitle')}</Text>

@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Linking from 'expo-linking';
+import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -19,12 +20,12 @@ import {
 } from '../../../components/ui';
 import { useBusinessRole } from '../../../hooks/useBusinessRole';
 import { api } from '../../../lib/api';
-import { formatDate, formatMoney, toNumber } from '../../../lib/format';
+import { formatDate, formatMoney } from '../../../lib/format';
 import { CURRENCY_CODE, colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useLanguage } from '../../../providers/LanguageProvider';
 import { useToast } from '../../../providers/ToastProvider';
-import type { TaxReturn, TaxReturnStatus } from '../../../lib/types';
+import type { TaxReturnStatus } from '../../../lib/types';
 
 function currentTaxYear(): { start: string; end: string } {
   const today = new Date();
@@ -42,12 +43,13 @@ function statusTone(status: TaxReturnStatus | string): 'neutral' | 'success' | '
 }
 
 export default function TaxScreen() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const toast = useToast();
   const { business } = useAuth();
   const { canManage } = useBusinessRole();
   const { t } = useLanguage();
-  const period = useMemo(currentTaxYear, []);
+  const period = useMemo(() => currentTaxYear(), []);
 
   const calculation = useQuery({
     queryKey: ['tax-calculation', business?.id, period.start, period.end],
@@ -107,7 +109,12 @@ export default function TaxScreen() {
     return (
       <Screen bottomTab>
         <Header title={t('tax')} showBack={false} />
-        <EmptyState icon="storefront-outline" title={t('createBusinessFirst')} />
+        <EmptyState
+          icon="storefront-outline"
+          title={t('createBusinessFirst')}
+          actionLabel={t('createBusiness')}
+          onAction={() => router.push('/(app)/business-form?mode=create')}
+        />
       </Screen>
     );
   }

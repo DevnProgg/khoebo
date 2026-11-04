@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 
@@ -13,6 +14,7 @@ import { useToast } from '../../../providers/ToastProvider';
 const categories = ['Stock', 'Transport', 'Rent', 'Airtime/Data', 'Other'];
 
 export default function MoneyOutScreen() {
+  const router = useRouter();
   const { business } = useAuth();
   const { t } = useLanguage();
   const toast = useToast();
@@ -51,7 +53,17 @@ export default function MoneyOutScreen() {
   };
 
   if (!business) {
-    return <Screen bottomTab><EmptyState icon="storefront-outline" title={t('createBusinessFirst')} /></Screen>;
+    return (
+      <Screen bottomTab>
+        <EmptyState
+          icon="storefront-outline"
+          title={t('createBusinessFirst')}
+          body={t('startRecordingExpenses')}
+          actionLabel={t('createBusiness')}
+          onAction={() => router.push('/(app)/business-form?mode=create')}
+        />
+      </Screen>
+    );
   }
 
   return (

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -10,6 +11,7 @@ import { useAuth } from '../../../providers/AuthProvider';
 import { useLanguage } from '../../../providers/LanguageProvider';
 
 export default function MyRecordsScreen() {
+  const router = useRouter();
   const { business } = useAuth();
   const { t } = useLanguage();
   const sales = useQuery({
@@ -23,7 +25,19 @@ export default function MyRecordsScreen() {
     enabled: Boolean(business),
   });
 
-  if (!business) return <Screen bottomTab><EmptyState icon="storefront-outline" title={t('createBusinessFirst')} /></Screen>;
+  if (!business) {
+    return (
+      <Screen bottomTab>
+        <EmptyState
+          icon="storefront-outline"
+          title={t('createBusinessFirst')}
+          body={t('startRecordingRecords')}
+          actionLabel={t('createBusiness')}
+          onAction={() => router.push('/(app)/business-form?mode=create')}
+        />
+      </Screen>
+    );
+  }
   if (sales.isLoading || expenses.isLoading) return <Screen bottomTab><LoadingView label={t('readingNumbers')} /></Screen>;
   if (sales.isError || expenses.isError) return <Screen bottomTab><ErrorState message={(sales.error ?? expenses.error)?.message ?? 'Could not load records'} onRetry={() => { void sales.refetch(); void expenses.refetch(); }} /></Screen>;
   const records = [

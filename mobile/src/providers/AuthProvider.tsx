@@ -33,6 +33,7 @@ interface AuthContextValue {
     phoneNumber?: string;
     password: string;
     uiMode?: UiMode;
+    businessName?: string;
   }) => Promise<void>;
   signOut: () => Promise<void>;
   refreshBusinesses: () => Promise<Business[]>;
@@ -113,6 +114,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [applyBusinesses, queryClient],
   );
 
+  const createBusiness = useCallback(
+    async (input: { name: string; currency: string }) => {
+      const created = await api.businesses.create(input);
+      const list = await api.businesses.list();
+      await applyBusinesses(list, created.id);
+      return created;
+    },
+    [applyBusinesses],
+  );
+
   const register = useCallback(
     async (input: {
       fullName: string;
@@ -120,6 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       phoneNumber?: string;
       password: string;
       uiMode?: UiMode;
+      businessName?: string;
     }) => {
       const email = input.email?.trim() || undefined;
       const phoneNumber = input.phoneNumber?.trim() || undefined;
@@ -134,8 +146,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const updated = await api.auth.updateProfile({ ui_mode: input.uiMode });
         setUser(updated);
       }
+      try {
+        const defaultBusinessName =
+          input.businessName?.trim() ||
+          (input.fullName.trim() ? `${input.fullName.trim()}'s Business` : 'My Business');
+        await createBusiness({ name: defaultBusinessName, currency: 'LSL' });
+      } catch {
+        // Business creation fallback handled in-app
+      }
     },
-    [signIn],
+    [createBusiness, signIn],
   );
 
   const signOut = useCallback(async () => {
@@ -153,16 +173,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await applyBusinesses(list, activeBusinessId);
     return list;
   }, [activeBusinessId, applyBusinesses]);
-
-  const createBusiness = useCallback(
-    async (input: { name: string; currency: string }) => {
-      const created = await api.businesses.create(input);
-      const list = await api.businesses.list();
-      await applyBusinesses(list, created.id);
-      return created;
-    },
-    [applyBusinesses],
-  );
 
   const updateBusiness = useCallback(
     async (businessId: string, input: { name?: string; currency?: string }) => {

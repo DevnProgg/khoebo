@@ -51,7 +51,17 @@ export default function SimpleSaleScreen() {
   };
 
   if (!business) {
-    return <Screen bottomTab><EmptyState icon="storefront-outline" title={t('createBusinessFirst')} /></Screen>;
+    return (
+      <Screen bottomTab>
+        <EmptyState
+          icon="storefront-outline"
+          title={t('createBusinessFirst')}
+          body={t('startRecordingSales')}
+          actionLabel={t('createBusiness')}
+          onAction={() => router.push('/(app)/business-form?mode=create')}
+        />
+      </Screen>
+    );
   }
 
   return (
