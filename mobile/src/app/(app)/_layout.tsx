@@ -11,7 +11,7 @@ export default function AppLayout() {
   const { booting, user } = useAuth();
   const { isSimple } = useUiMode();
   const segments = useSegments();
-  const advancedRoutes = ['analytics', 'reports', 'bookkeeping', 'sales-history', 'reminders', 'team', 'tax', 'stock', 'sell'];
+  const advancedRoutes = ['reports', 'bookkeeping', 'sales-history', 'reminders', 'team', 'stock', 'sell'];
   const onAdvancedRoute = isSimple && segments.some((segment) => advancedRoutes.includes(segment));
 
   if (booting) return <LoadingScreen />;
@@ -29,6 +29,7 @@ export default function AppLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
         <Stack.Screen name="analytics" />
+        <Stack.Screen name="tax" />
         <Stack.Screen name="reports" />
         <Stack.Screen name="bookkeeping" />
         <Stack.Screen name="sales-history" />

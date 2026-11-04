@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { BusinessSwitcher } from '../../../components/BusinessSwitcher';
 import {
   Avatar,
   Badge,
@@ -26,11 +27,11 @@ export default function SettingsScreen() {
   const { user, business, signOut } = useAuth();
   const { role } = useBusinessRole();
   const { language, setLanguage, t } = useLanguage();
-  const { mode, setMode, isAdvanced } = useUiMode();
+  const { mode, setMode, isAdvanced, isSimple } = useUiMode();
 
   return (
-    <Screen>
-      <Header title={t('settings')} subtitle={t('settingsSubtitle')} />
+    <Screen bottomTab={isSimple}>
+      <Header title={t('settings')} subtitle={t('settingsSubtitle')} showBack={!isSimple} />
 
       <Reveal>
         <Card style={styles.profile}>
@@ -50,6 +51,31 @@ export default function SettingsScreen() {
           <Ionicons name="person-circle-outline" size={24} color={colors.inkMuted} />
         </Card>
       </Reveal>
+
+      <View style={styles.switcherRow}>
+        <BusinessSwitcher />
+      </View>
+
+      {isSimple ? (
+        <>
+          <SectionHeader title={t('insightsAndTax')} />
+          <Card padded={false}>
+            <MenuRow
+              icon="receipt-outline"
+              title={t('tax')}
+              subtitle={t('taxEstimateSubtitle')}
+              onPress={() => router.push('/tax')}
+            />
+            <MenuRow
+              icon="bar-chart-outline"
+              title={t('analytics')}
+              subtitle={t('analyticsSubtitleSimple')}
+              onPress={() => router.push('/(app)/analytics')}
+              last
+            />
+          </Card>
+        </>
+      ) : null}
 
       <SectionHeader title={t('account')} />
       <Card padded={false}>
@@ -75,6 +101,7 @@ export default function SettingsScreen() {
           title={t('businessProfile')}
           subtitle={business ? `${business.name} · LSL` : t('noBusinessSelected')}
           onPress={() => router.push('/(app)/settings/business')}
+          last={!isAdvanced}
         />
         {isAdvanced ? (
           <MenuRow
@@ -166,6 +193,10 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  switcherRow: {
+    marginTop: spacing.lg,
+    flexDirection: 'row',
+  },
   profile: {
     flexDirection: 'row',
     alignItems: 'center',

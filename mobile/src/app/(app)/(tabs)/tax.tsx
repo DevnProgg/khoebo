@@ -25,6 +25,7 @@ import { CURRENCY_CODE, colors, radius, spacing, type } from '../../../lib/theme
 import { useAuth } from '../../../providers/AuthProvider';
 import { useLanguage } from '../../../providers/LanguageProvider';
 import { useToast } from '../../../providers/ToastProvider';
+import { useUiMode } from '../../../providers/UiModeProvider';
 import type { TaxReturnStatus } from '../../../lib/types';
 
 function currentTaxYear(): { start: string; end: string } {
@@ -49,6 +50,7 @@ export default function TaxScreen() {
   const { business } = useAuth();
   const { canManage } = useBusinessRole();
   const { t } = useLanguage();
+  const { isSimple } = useUiMode();
   const period = useMemo(() => currentTaxYear(), []);
 
   const calculation = useQuery({
@@ -107,8 +109,12 @@ export default function TaxScreen() {
 
   if (!business) {
     return (
-      <Screen bottomTab>
-        <Header title={t('tax')} showBack={false} />
+      <Screen bottomTab={!isSimple}>
+        <Header
+          title={t('tax')}
+          subtitle={isSimple ? t('taxSubtitleSimple') : t('taxSubtitle')}
+          showBack={isSimple}
+        />
         <EmptyState
           icon="storefront-outline"
           title={t('createBusinessFirst')}
@@ -123,22 +129,140 @@ export default function TaxScreen() {
   const calculationError = calculation.error ?? deadlines.error ?? returns.error;
   const liability = calculation.data?.tax_liability;
   const taxValue = liability?.tax ?? liability?.net_vat;
+  const nextDeadline = deadlines.data?.deadlines?.[0];
 
   return (
     <Screen
-      bottomTab
+      bottomTab={!isSimple}
       refreshing={calculation.isRefetching || deadlines.isRefetching || returns.isRefetching}
       onRefresh={() => {
         void Promise.all([calculation.refetch(), deadlines.refetch(), returns.refetch()]);
       }}
     >
-      <Header title={t('tax')} subtitle={t('taxSubtitle')} showBack={false} />
+      <Header
+        title={t('tax')}
+        subtitle={isSimple ? t('taxSubtitleSimple') : t('taxSubtitle')}
+        showBack={isSimple}
+      />
       <BusinessSwitcher />
 
       {busy ? (
         <LoadingView label={t('readingNumbers')} />
       ) : calculationError ? (
         <ErrorState message={calculationError.message} onRetry={() => calculation.refetch()} />
+      ) : isSimple ? (
+        <>
+          <Reveal>
+            <Card style={styles.hero}>
+              <View style={styles.heroTop}>
+                <View style={styles.heroIcon}>
+                  <Ionicons name="receipt-outline" size={22} color={colors.primary} />
+                </View>
+                <Badge
+                  label={
+                    calculation.data?.status === 'validated'
+                      ? t('upToDate')
+                      : calculation.data?.warnings?.length
+                        ? t('checkRecords')
+                        : t('estimate')
+                  }
+                  tone={
+                    calculation.data?.status === 'validated'
+                      ? 'success'
+                      : calculation.data?.warnings?.length
+                        ? 'warning'
+                        : 'neutral'
+                  }
+                />
+              </View>
+              <Text style={styles.heroLabel}>{t('estimatedTaxToSave')}</Text>
+              <Text style={styles.heroValue}>{formatMoney(taxValue ?? 0, CURRENCY_CODE)}</Text>
+              <Text style={styles.heroMeta}>
+                {formatDate(period.start, true)} - {formatDate(period.end, true)}
+              </Text>
+            </Card>
+          </Reveal>
+
+          <SectionHeader title={t('howItsCalculated')} />
+          <Card style={styles.breakdownCard}>
+            <View style={styles.breakdownRow}>
+              <Text style={styles.breakdownLabel}>{t('moneyIn')}</Text>
+              <Text style={styles.breakdownValue}>
+                {formatMoney(calculation.data?.accounting_figures?.revenue ?? 0, CURRENCY_CODE)}
+              </Text>
+            </View>
+            <View style={styles.breakdownRow}>
+              <Text style={styles.breakdownLabel}>{t('moneyOut')}</Text>
+              <Text style={styles.breakdownValue}>
+                {formatMoney(calculation.data?.accounting_figures?.expenses ?? 0, CURRENCY_CODE)}
+              </Text>
+            </View>
+            <View style={styles.breakdownDivider} />
+            <View style={styles.breakdownRow}>
+              <Text style={styles.breakdownLabel}>{t('taxableProfit')}</Text>
+              <Text style={styles.breakdownValue}>
+                {formatMoney(calculation.data?.accounting_figures?.net_profit ?? 0, CURRENCY_CODE)}
+              </Text>
+            </View>
+            <View style={[styles.breakdownRow, styles.breakdownHighlight]}>
+              <Text style={styles.breakdownHighlightLabel}>{t('taxDue')}</Text>
+              <Text style={styles.breakdownHighlightValue}>
+                {formatMoney(taxValue ?? 0, CURRENCY_CODE)}
+              </Text>
+            </View>
+          </Card>
+
+          <SectionHeader title={t('taxDeadlines')} />
+          {nextDeadline ? (
+            <Card style={styles.row}>
+              <View style={styles.rowIcon}>
+                <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+              </View>
+              <View style={styles.flex}>
+                <Text style={styles.rowTitle}>{nextDeadline.label}</Text>
+                <Text style={styles.rowMeta}>
+                  {nextDeadline.due_date ? `Due ${formatDate(nextDeadline.due_date, true)}` : t('taxNeedsReview')}
+                </Text>
+              </View>
+              <Badge
+                label={nextDeadline.status}
+                tone={nextDeadline.status === 'overdue' ? 'danger' : 'neutral'}
+              />
+            </Card>
+          ) : (
+            <Card style={styles.row}>
+              <View style={styles.rowIcon}>
+                <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+              </View>
+              <View style={styles.flex}>
+                <Text style={styles.rowTitle}>{t('taxDeadlines')}</Text>
+                <Text style={styles.rowMeta}>{t('upToDate')}</Text>
+              </View>
+            </Card>
+          )}
+
+          <SectionHeader title={t('filingAndPayment')} />
+          <Card style={styles.portalCard}>
+            <View style={styles.portalIcon}>
+              <Ionicons name="open-outline" size={20} color={colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <Text style={styles.rowTitle}>{t('openRsl')}</Text>
+              <Text style={styles.rowMeta}>{t('openRslSubtitle')}</Text>
+            </View>
+            <Button title={t('openPortal')} variant="secondary" small onPress={openPortal} />
+          </Card>
+
+          <Card style={styles.tipCard}>
+            <View style={styles.tipIcon}>
+              <Ionicons name="sparkles" size={18} color={colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <Text style={styles.tipTitle}>{t('taxTipTitle')}</Text>
+              <Text style={styles.tipBody}>{t('taxTipBody')}</Text>
+            </View>
+          </Card>
+        </>
       ) : (
         <>
           <Reveal>
@@ -300,5 +424,66 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  breakdownCard: {
+    gap: spacing.md,
+  },
+  breakdownRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  breakdownLabel: {
+    ...type.body,
+    color: colors.inkSoft,
+  },
+  breakdownValue: {
+    ...type.bodyStrong,
+    color: colors.ink,
+  },
+  breakdownDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.line,
+  },
+  breakdownHighlight: {
+    backgroundColor: colors.primarySoft,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    marginHorizontal: -spacing.md,
+    marginBottom: -spacing.xs,
+  },
+  breakdownHighlightLabel: {
+    ...type.bodyStrong,
+    color: colors.primaryDark,
+  },
+  breakdownHighlightValue: {
+    ...type.heading,
+    color: colors.primaryDark,
+    fontSize: 18,
+  },
+  tipCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.md,
+    backgroundColor: colors.surfaceAlt,
+    marginTop: spacing.md,
+  },
+  tipIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: radius.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tipTitle: {
+    ...type.bodyStrong,
+    color: colors.ink,
+  },
+  tipBody: {
+    ...type.small,
+    color: colors.inkSoft,
+    marginTop: 2,
+    lineHeight: 18,
   },
 });

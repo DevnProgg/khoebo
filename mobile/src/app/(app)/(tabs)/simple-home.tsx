@@ -197,11 +197,23 @@ export default function SimpleHomeScreen() {
           style={styles.actionBtn}
         />
       </View>
+
+      <Card style={styles.insightsCard} onPress={() => router.push('/(app)/analytics')}>
+        <View style={styles.insightsIcon}>
+          <Ionicons name="bar-chart-outline" size={20} color={colors.primary} />
+        </View>
+        <View style={styles.flex}>
+          <Text style={styles.insightsTitle}>{t('analytics')}</Text>
+          <Text style={styles.insightsSubtitle}>{t('analyticsSubtitleSimple')}</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={colors.inkMuted} />
+      </Card>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   grid: { gap: spacing.md, marginTop: spacing.lg },
   card: { gap: spacing.sm },
   made: { backgroundColor: colors.primaryMist },
@@ -244,5 +256,28 @@ const styles = StyleSheet.create({
     ...type.small,
     color: colors.danger,
     textAlign: 'center',
+  },
+  insightsCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+  insightsIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  insightsTitle: {
+    ...type.bodyStrong,
+    color: colors.ink,
+  },
+  insightsSubtitle: {
+    ...type.small,
+    color: colors.inkSoft,
+    marginTop: 2,
   },
 });
