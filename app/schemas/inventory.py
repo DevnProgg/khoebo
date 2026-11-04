@@ -37,6 +37,7 @@ class ProductOut(ORMModel):
     stock_quantity: Quantity
     low_stock_threshold: Quantity
     is_active: bool
+    is_draft: bool
     created_at: datetime
     updated_at: datetime
 

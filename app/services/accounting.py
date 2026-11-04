@@ -1,5 +1,6 @@
 import uuid
 from datetime import date
+from datetime import timedelta
 from decimal import ROUND_HALF_UP, Decimal
 
 from sqlalchemy import func, select
@@ -132,7 +133,7 @@ def post_sale_journal(db: Session, sale: Sale, created_by: uuid.UUID | None = No
     tax_payable = get_account_by_code(db, sale.business_id, "2200")
     cogs_account = get_account_by_code(db, sale.business_id, "5000")
     inventory = get_account_by_code(db, sale.business_id, "1200")
-    if not all([cash, revenue, discounts, tax_payable, cogs_account, inventory]):
+    if not all([cash, revenue, discounts, tax_payable]):
         raise AccountingError("Default chart of accounts is incomplete")
 
     cogs_total = money(
@@ -162,6 +163,8 @@ def post_sale_journal(db: Session, sale: Sale, created_by: uuid.UUID | None = No
             }
         )
     if cogs_total > 0:
+        if cogs_account is None or inventory is None:
+            raise AccountingError("Default chart of accounts is incomplete")
         lines.append(
             {"account_id": cogs_account.id, "debit": cogs_total, "description": "Cost of goods sold"}
         )
@@ -176,7 +179,7 @@ def post_sale_journal(db: Session, sale: Sale, created_by: uuid.UUID | None = No
     return create_journal_entry(
         db,
         business_id=sale.business_id,
-        entry_date=sale.created_at.date(),
+        entry_date=sale.effective_date,
         memo=f"Sale {sale.reference}",
         lines=lines,
         created_by=created_by,

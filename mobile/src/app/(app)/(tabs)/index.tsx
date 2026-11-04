@@ -34,8 +34,15 @@ import {
 import { CURRENCY_CODE, colors, radius, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useLanguage } from '../../../providers/LanguageProvider';
+import { useUiMode } from '../../../providers/UiModeProvider';
+import SimpleHomeScreen from './simple-home';
 
 export default function HomeScreen() {
+  const { isSimple } = useUiMode();
+  return isSimple ? <SimpleHomeScreen /> : <AdvancedHomeScreen />;
+}
+
+function AdvancedHomeScreen() {
   const router = useRouter();
   const { user, business } = useAuth();
   const { t } = useLanguage();

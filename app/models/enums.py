@@ -19,6 +19,17 @@ class SaleStatus(str, enum.Enum):
     void = "void"
 
 
+class UiMode(str, enum.Enum):
+    simple = "simple"
+    advanced = "advanced"
+
+
+class EntrySource(str, enum.Enum):
+    live = "live"
+    backdated = "backdated"
+    estimate = "estimate"
+
+
 class PaymentMethod(str, enum.Enum):
     cash = "cash"
     card = "card"

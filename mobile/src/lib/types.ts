@@ -8,6 +8,7 @@ export type AccountType = 'asset' | 'liability' | 'equity' | 'revenue' | 'expens
 export type StockMovementType = 'in' | 'out' | 'adjustment';
 export type ReminderType = 'low_stock' | 'record_sales' | 'inventory_count' | 'custom';
 export type ReminderFrequency = 'once' | 'daily' | 'weekly' | 'monthly';
+export type UiMode = 'simple' | 'advanced';
 export type TaxReturnStatus = 'validated' | 'flagged' | 'approved' | 'filed';
 
 export interface User {
@@ -18,6 +19,7 @@ export interface User {
   is_active: boolean;
   is_superuser: boolean;
   created_at: string;
+  ui_mode: UiMode;
 }
 
 export interface TokenPair {
@@ -94,6 +96,8 @@ export interface Sale {
   tax_rate: Decimal;
   tax_amount: Decimal;
   total: Decimal;
+  effective_date: string;
+  entry_source: string;
   notes: string | null;
   created_by: ID | null;
   created_at: string;
@@ -136,6 +140,9 @@ export interface Expense {
   description: string;
   amount: Decimal;
   expense_date: string;
+  effective_date: string;
+  entry_source: string;
+  idempotency_key: string | null;
   payment_method: string;
   account_id: ID;
   journal_entry_id: ID | null;

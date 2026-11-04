@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, Field, model_validator
 
-from app.models.enums import AccountType, PaymentMethod
+from app.models.enums import AccountType, EntrySource, PaymentMethod
 from app.schemas.common import Money, ORMModel, PositiveMoney
 
 
@@ -70,6 +70,8 @@ class ExpenseCreate(BaseModel):
     expense_date: date
     payment_method: PaymentMethod = PaymentMethod.cash
     account_id: uuid.UUID | None = None
+    effective_date: date | None = None
+    idempotency_key: str | None = Field(default=None, max_length=120)
 
 
 class ExpenseOut(ORMModel):
@@ -78,6 +80,9 @@ class ExpenseOut(ORMModel):
     description: str
     amount: Money
     expense_date: date
+    effective_date: date
+    entry_source: EntrySource
+    idempotency_key: str | None
     payment_method: str
     account_id: uuid.UUID
     journal_entry_id: uuid.UUID | None

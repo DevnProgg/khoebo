@@ -1,5 +1,5 @@
 import uuid
-from datetime import date
+from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
@@ -10,7 +10,7 @@ from app.api.deps import get_current_user, get_membership, require_roles
 from app.db.session import get_db
 from app.models.accounting import Account, Expense, JournalEntry
 from app.models.business import BusinessMember
-from app.models.enums import AccountType, MemberRole
+from app.models.enums import AccountType, EntrySource, MemberRole
 from app.models.user import User
 from app.schemas.accounting import (
     AccountCreate,
@@ -142,6 +142,16 @@ def create_expense(
 ) -> Expense:
     require_roles(membership, MemberRole.owner, MemberRole.admin)
 
+    if payload.idempotency_key:
+        existing = db.scalar(
+            select(Expense).where(
+                Expense.business_id == membership.business_id,
+                Expense.idempotency_key == payload.idempotency_key,
+            )
+        )
+        if existing is not None:
+            return existing
+
     if payload.account_id is not None:
         account = db.scalar(
             select(Account).where(
@@ -171,7 +181,14 @@ def create_expense(
         business_id=membership.business_id,
         description=payload.description.strip(),
         amount=payload.amount,
-        expense_date=payload.expense_date,
+        expense_date=payload.effective_date or payload.expense_date,
+        effective_date=payload.effective_date or payload.expense_date,
+        entry_source=(
+            EntrySource.backdated
+            if (payload.effective_date or payload.expense_date) < date.today() - timedelta(days=1)
+            else EntrySource.live
+        ),
+        idempotency_key=payload.idempotency_key,
         payment_method=payload.payment_method.value,
         account_id=account.id,
         created_by=user.id,
@@ -182,7 +199,7 @@ def create_expense(
         entry = post_expense_journal(
             db,
             business_id=membership.business_id,
-            expense_date=payload.expense_date,
+            expense_date=payload.effective_date or payload.expense_date,
             description=payload.description,
             amount=payload.amount,
             account_id=account.id,

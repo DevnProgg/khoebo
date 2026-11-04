@@ -23,15 +23,13 @@ def _range_bounds(start_date: date, end_date: date) -> tuple[datetime, datetime]
 def overview(
     db: Session, business_id: uuid.UUID, start_date: date, end_date: date
 ) -> dict:
-    start, end = _range_bounds(start_date, end_date)
-
     sales = list(
         db.scalars(
             select(Sale).where(
                 Sale.business_id == business_id,
                 Sale.status == SaleStatus.completed,
-                Sale.created_at >= start,
-                Sale.created_at < end,
+                Sale.effective_date >= start_date,
+                Sale.effective_date <= end_date,
             )
         ).all()
     )
@@ -53,7 +51,7 @@ def overview(
         tax_collected += money(sale.tax_amount)
         payment_totals[sale.payment_method.value] += money(sale.total)
 
-        sale_day = sale.created_at.date()
+        sale_day = sale.effective_date
         daily[sale_day]["revenue"] += sale_revenue
         daily[sale_day]["sales_count"] += 1
 
@@ -76,8 +74,8 @@ def overview(
         db.scalar(
             select(func.coalesce(func.sum(Expense.amount), 0)).where(
                 Expense.business_id == business_id,
-                Expense.expense_date >= start_date,
-                Expense.expense_date <= end_date,
+                Expense.effective_date >= start_date,
+                Expense.effective_date <= end_date,
             )
         )
         or 0
@@ -141,13 +139,12 @@ def overview(
 def sales_summary(
     db: Session, business_id: uuid.UUID, start_date: date, end_date: date
 ) -> dict:
-    start, end = _range_bounds(start_date, end_date)
     sales = list(
         db.scalars(
             select(Sale).where(
                 Sale.business_id == business_id,
-                Sale.created_at >= start,
-                Sale.created_at < end,
+                Sale.effective_date >= start_date,
+                Sale.effective_date <= end_date,
             )
         ).all()
     )

@@ -18,7 +18,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin
-from app.models.enums import AccountType
+from app.models.enums import AccountType, EntrySource
 
 
 def _account_type_enum() -> Enum:
@@ -94,6 +94,7 @@ class JournalLine(Base):
 
 class Expense(TimestampMixin, Base):
     __tablename__ = "expenses"
+    __table_args__ = (UniqueConstraint("business_id", "idempotency_key", name="uq_expenses_business_idempotency_key"),)
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     business_id: Mapped[uuid.UUID] = mapped_column(
@@ -102,6 +103,18 @@ class Expense(TimestampMixin, Base):
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     amount: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
     expense_date: Mapped[date] = mapped_column(Date, nullable=False)
+    effective_date: Mapped[date] = mapped_column(Date, nullable=False)
+    entry_source: Mapped[EntrySource] = mapped_column(
+        Enum(
+            EntrySource,
+            native_enum=False,
+            length=20,
+            values_callable=lambda enum_cls: [item.value for item in enum_cls],
+        ),
+        default=EntrySource.live,
+        nullable=False,
+    )
+    idempotency_key: Mapped[str | None] = mapped_column(String(120), nullable=True)
     payment_method: Mapped[str] = mapped_column(String(20), nullable=False, default="cash")
     account_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("accounts.id", ondelete="RESTRICT"), nullable=False

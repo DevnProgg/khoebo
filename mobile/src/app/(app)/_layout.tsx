@@ -1,16 +1,22 @@
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, Stack, useSegments } from 'expo-router';
 import React from 'react';
 
 import { LoadingScreen } from '../../components/ui';
 import { TourOverlay } from '../../components/TourOverlay';
 import { colors } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
+import { useUiMode } from '../../providers/UiModeProvider';
 
 export default function AppLayout() {
   const { booting, user } = useAuth();
+  const { isSimple } = useUiMode();
+  const segments = useSegments();
+  const advancedRoutes = ['analytics', 'reports', 'bookkeeping', 'sales-history', 'reminders', 'team', 'tax', 'stock', 'sell'];
+  const onAdvancedRoute = isSimple && segments.some((segment) => advancedRoutes.includes(segment));
 
   if (booting) return <LoadingScreen />;
   if (!user) return <Redirect href="/(auth)/welcome" />;
+  if (onAdvancedRoute) return <Redirect href="/(app)/(tabs)" />;
 
   return (
     <>

@@ -49,6 +49,7 @@ class Product(TimestampMixin, Base):
         Numeric(14, 3), nullable=False, default=Decimal("0")
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_draft: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     business: Mapped["Business"] = relationship(back_populates="products")
     stock_movements: Mapped[list["StockMovement"]] = relationship(

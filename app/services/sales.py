@@ -1,12 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.business import Business
-from app.models.enums import SaleStatus, StockMovementType
+from app.models.enums import EntrySource, SaleStatus, StockMovementType
 from app.models.inventory import Product
 from app.models.sales import Sale, SaleItem
 from app.models.user import User
@@ -30,15 +30,29 @@ def _new_reference() -> str:
 
 
 def create_sale(db: Session, *, business: Business, user: User, payload: SaleCreate) -> Sale:
+    if payload.idempotency_key:
+        existing = db.scalar(
+            select(Sale).where(
+                Sale.business_id == business.id,
+                Sale.idempotency_key == payload.idempotency_key,
+            )
+        )
+        if existing is not None:
+            return existing
+
     product_ids = [item.product_id for item in payload.items]
+    if not product_ids and payload.amount is None:
+        raise SaleError("An amount is required when a sale has no items")
     if len(product_ids) != len(set(product_ids)):
         raise SaleError("Each product may only appear once per sale")
 
-    products = db.scalars(
-        select(Product)
-        .where(Product.business_id == business.id, Product.id.in_(product_ids))
-        .with_for_update()
-    ).all()
+    products = []
+    if product_ids:
+        products = db.scalars(
+            select(Product)
+            .where(Product.business_id == business.id, Product.id.in_(product_ids))
+            .with_for_update()
+        ).all()
     products_by_id = {product.id: product for product in products}
 
     missing = [str(pid) for pid in product_ids if pid not in products_by_id]
@@ -70,7 +84,7 @@ def create_sale(db: Session, *, business: Business, user: User, payload: SaleCre
             )
         )
 
-    subtotal = money(subtotal)
+    subtotal = money(payload.amount) if not product_ids else money(subtotal)
     discount = money(payload.discount_amount)
     if discount > subtotal:
         raise SaleError("Discount cannot be greater than the sale subtotal")
@@ -93,7 +107,12 @@ def create_sale(db: Session, *, business: Business, user: User, payload: SaleCre
         notes=payload.notes,
         created_by=user.id,
         items=items,
+        effective_date=payload.effective_date or date.today(),
+        entry_source=EntrySource.live,
+        idempotency_key=payload.idempotency_key,
     )
+    if sale.effective_date < date.today() - timedelta(days=1):
+        sale.entry_source = EntrySource.backdated
     db.add(sale)
     db.flush()
 

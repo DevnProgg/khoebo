@@ -12,6 +12,7 @@ import { AuthProvider } from '../providers/AuthProvider';
 import { LanguageProvider } from '../providers/LanguageProvider';
 import { OfflineProvider } from '../providers/OfflineProvider';
 import { ToastProvider } from '../providers/ToastProvider';
+import { UiModeProvider } from '../providers/UiModeProvider';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
@@ -30,20 +31,22 @@ export default function RootLayout() {
           <LanguageProvider>
             <OfflineProvider>
               <AuthProvider>
-                <ToastProvider>
-                  <StatusBar style="dark" />
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
-                      contentStyle: { backgroundColor: colors.background },
-                      animation: 'fade',
-                    }}
-                  >
-                    <Stack.Screen name="index" />
-                    <Stack.Screen name="(auth)" />
-                    <Stack.Screen name="(app)" />
-                  </Stack>
-                </ToastProvider>
+                <UiModeProvider>
+                  <ToastProvider>
+                    <StatusBar style="dark" />
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        contentStyle: { backgroundColor: colors.background },
+                        animation: 'fade',
+                      }}
+                    >
+                      <Stack.Screen name="index" />
+                      <Stack.Screen name="(auth)" />
+                      <Stack.Screen name="(app)" />
+                    </Stack>
+                  </ToastProvider>
+                </UiModeProvider>
               </AuthProvider>
             </OfflineProvider>
           </LanguageProvider>

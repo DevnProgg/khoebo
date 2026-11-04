@@ -31,6 +31,7 @@ import type {
   TaxAccountingSummary,
   TaxWarning,
   User,
+  UiMode,
 } from './types';
 import {
   cacheKey,
@@ -302,6 +303,15 @@ export interface SaleInput {
   notes?: string | null;
 }
 
+export interface QuickSaleInput {
+  amount: number;
+  items_text?: string;
+  effective_date?: string;
+  payment_method?: PaymentMethod;
+  notes?: string;
+  idempotency_key?: string;
+}
+
 export interface JournalLineInput {
   account_id: string;
   debit: number;
@@ -334,7 +344,7 @@ export const api = {
       }),
     changePassword: (payload: { current_password: string; new_password: string }) =>
       request<void>('/auth/change-password', { method: 'POST', body: payload }),
-    updateProfile: (payload: { full_name?: string }) =>
+    updateProfile: (payload: { full_name?: string; ui_mode?: UiMode }) =>
       request<User>('/users/me', { method: 'PATCH', body: payload }),
   },
   businesses: {
@@ -407,6 +417,8 @@ export const api = {
       request<Sale>(`/businesses/${businessId}/sales/${saleId}`),
     create: (businessId: string, payload: SaleInput) =>
       request<Sale>(`/businesses/${businessId}/sales`, { method: 'POST', body: payload }),
+    quick: (businessId: string, payload: QuickSaleInput) =>
+      request<Sale>(`/businesses/${businessId}/sales/quick`, { method: 'POST', body: payload }),
     refund: (businessId: string, saleId: string) =>
       request<Sale>(`/businesses/${businessId}/sales/${saleId}/refund`, { method: 'POST' }),
   },
@@ -437,6 +449,8 @@ export const api = {
         expense_date: string;
         payment_method: PaymentMethod;
         account_id?: string | null;
+        effective_date?: string;
+        idempotency_key?: string;
       },
     ) =>
       request<Expense>(`/businesses/${businessId}/expenses`, {

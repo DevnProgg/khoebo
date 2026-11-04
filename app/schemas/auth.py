@@ -4,6 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
 from app.core.identity import normalize_phone
+from app.models.enums import UiMode
 
 from app.schemas.common import ORMModel
 
@@ -99,11 +100,13 @@ class UserOut(ORMModel):
     full_name: str
     is_active: bool
     is_superuser: bool
+    ui_mode: UiMode
     created_at: datetime
 
 
 class UserUpdate(BaseModel):
     full_name: str | None = Field(default=None, min_length=1, max_length=255)
+    ui_mode: UiMode | None = None
 
 
 class UserStatusUpdate(BaseModel):

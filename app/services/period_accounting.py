@@ -37,13 +37,12 @@ def calculate_period_accounting(
             break
     operating_expenses = money(total_expenses - cogs)
 
-    start_at, end_at = _utc_bounds(start_date, end_date)
     sales = list(
         db.scalars(
             select(Sale).where(
                 Sale.business_id == business_id,
-                Sale.created_at >= start_at,
-                Sale.created_at < end_at,
+                Sale.effective_date >= start_date,
+                Sale.effective_date <= end_date,
             )
         ).all()
     )
@@ -54,8 +53,8 @@ def calculate_period_accounting(
             select(Sale).where(
                 Sale.business_id == business_id,
                 Sale.status == SaleStatus.refunded,
-                Sale.refunded_at >= start_at,
-                Sale.refunded_at < end_at,
+                Sale.effective_date >= start_date,
+                Sale.effective_date <= end_date,
             )
         ).all()
     ]
@@ -88,8 +87,8 @@ def calculate_period_accounting(
             select(Expense)
             .where(
                 Expense.business_id == business_id,
-                Expense.expense_date >= start_date,
-                Expense.expense_date <= end_date,
+                Expense.effective_date >= start_date,
+                Expense.effective_date <= end_date,
             )
             .order_by(Expense.expense_date, Expense.id)
         ).all()

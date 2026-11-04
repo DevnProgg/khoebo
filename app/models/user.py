@@ -1,10 +1,20 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Uuid, func
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin
+from app.models.enums import UiMode
+
+
+def _ui_mode_enum() -> Enum:
+    return Enum(
+        UiMode,
+        native_enum=False,
+        length=20,
+        values_callable=lambda enum_cls: [item.value for item in enum_cls],
+    )
 
 
 class User(TimestampMixin, Base):
@@ -19,6 +29,7 @@ class User(TimestampMixin, Base):
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    ui_mode: Mapped[UiMode] = mapped_column(_ui_mode_enum(), default=UiMode.simple, nullable=False)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     memberships: Mapped[list["BusinessMember"]] = relationship(

@@ -19,12 +19,14 @@ import { titleCase } from '../../../lib/format';
 import { colors, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useLanguage } from '../../../providers/LanguageProvider';
+import { useUiMode } from '../../../providers/UiModeProvider';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, business, signOut } = useAuth();
   const { role } = useBusinessRole();
   const { language, setLanguage, t } = useLanguage();
+  const { mode, setMode, isAdvanced } = useUiMode();
 
   return (
     <Screen>
@@ -74,13 +76,15 @@ export default function SettingsScreen() {
           subtitle={business ? `${business.name} · LSL` : t('noBusinessSelected')}
           onPress={() => router.push('/(app)/settings/business')}
         />
-        <MenuRow
-          icon="people-outline"
-          title={t('teamRoles')}
-          subtitle={t('teamRolesSubtitle')}
-          onPress={() => router.push('/(app)/team')}
-          last
-        />
+        {isAdvanced ? (
+          <MenuRow
+            icon="people-outline"
+            title={t('teamRoles')}
+            subtitle={t('teamRolesSubtitle')}
+            onPress={() => router.push('/(app)/team')}
+            last
+          />
+        ) : null}
       </Card>
 
       <SectionHeader title={t('support')} />
@@ -120,6 +124,28 @@ export default function SettingsScreen() {
             </Pressable>
           ))}
         </View>
+      </Card>
+
+      <SectionHeader title={t('modeTitle')} />
+      <Card style={styles.modeCard}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ selected: mode === 'simple' }}
+          onPress={() => void setMode('simple')}
+          style={[styles.modeOption, mode === 'simple' && styles.modeSelected]}
+        >
+          <Text style={[styles.modeLabel, mode === 'simple' && styles.modeLabelSelected]}>{t('simpleMode')}</Text>
+          <Text style={styles.modeBody}>{t('modeSimpleBody')}</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ selected: mode === 'advanced' }}
+          onPress={() => void setMode('advanced')}
+          style={[styles.modeOption, mode === 'advanced' && styles.modeSelected]}
+        >
+          <Text style={[styles.modeLabel, mode === 'advanced' && styles.modeLabelSelected]}>{t('advancedMode')}</Text>
+          <Text style={styles.modeBody}>{t('modeAdvancedBody')}</Text>
+        </Pressable>
       </Card>
 
       <Card style={styles.signOut} onPress={() => void signOut()}>
@@ -172,6 +198,18 @@ const styles = StyleSheet.create({
   languageCard: {
     gap: spacing.md,
   },
+  modeCard: { gap: spacing.sm },
+  modeOption: {
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: spacing.sm,
+    padding: spacing.md,
+    gap: 2,
+  },
+  modeSelected: { backgroundColor: colors.primarySoft, borderColor: colors.primary },
+  modeLabel: { ...type.bodyStrong, color: colors.ink },
+  modeLabelSelected: { color: colors.primaryDark },
+  modeBody: { ...type.small, color: colors.inkMuted },
   languageTitle: {
     ...type.bodyStrong,
     color: colors.ink,

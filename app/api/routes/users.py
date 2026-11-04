@@ -20,6 +20,8 @@ def update_me(
 ) -> User:
     if payload.full_name is not None:
         user.full_name = payload.full_name.strip()
+    if payload.ui_mode is not None:
+        user.ui_mode = payload.ui_mode
     db.commit()
     db.refresh(user)
     return user

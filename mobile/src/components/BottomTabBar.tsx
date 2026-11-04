@@ -9,11 +9,15 @@ import { colors, radius, shadow, spacing, type } from '../lib/theme';
 import { useLanguage } from '../providers/LanguageProvider';
 import { tapHaptic } from './ui';
 
-const tabs: Record<string, { key: 'home' | 'sell' | 'stock' | 'tax' | 'more'; active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }> = {
+const tabs: Record<string, { key: 'home' | 'sell' | 'stock' | 'tax' | 'more' | 'recordSale' | 'moneyOut' | 'records' | 'settings'; active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }> = {
   index: { key: 'home', active: 'home', inactive: 'home-outline' },
   sell: { key: 'sell', active: 'cart', inactive: 'cart-outline' },
   stock: { key: 'stock', active: 'cube', inactive: 'cube-outline' },
   tax: { key: 'tax', active: 'receipt', inactive: 'receipt-outline' },
+  'simple-sale': { key: 'recordSale', active: 'add-circle', inactive: 'add-circle-outline' },
+  'money-out': { key: 'moneyOut', active: 'arrow-up-circle', inactive: 'arrow-up-circle-outline' },
+  'my-records': { key: 'records', active: 'list', inactive: 'list-outline' },
+  settings: { key: 'settings', active: 'settings', inactive: 'settings-outline' },
   more: { key: 'more', active: 'grid', inactive: 'grid-outline' },
 };
 

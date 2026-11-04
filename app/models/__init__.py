@@ -2,6 +2,7 @@ from app.models.accounting import Account, Expense, JournalEntry, JournalLine
 from app.models.business import Business, BusinessMember
 from app.models.enums import (
     AccountType,
+    EntrySource,
     MemberRole,
     PaymentMethod,
     ReminderFrequency,
@@ -12,6 +13,7 @@ from app.models.enums import (
     TaxpayerType,
     TaxReturnStatus,
     TaxType,
+    UiMode,
 )
 from app.models.inventory import Product, StockMovement
 from app.models.reminder import Reminder
@@ -32,6 +34,7 @@ from app.models.user import RefreshToken, User
 __all__ = [
     "Account",
     "AccountType",
+    "EntrySource",
     "Business",
     "BusinessMember",
     "Expense",
@@ -62,5 +65,6 @@ __all__ = [
     "TaxRuleSet",
     "TaxType",
     "TaxpayerType",
+    "UiMode",
     "User",
 ]

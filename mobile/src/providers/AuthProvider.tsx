@@ -17,7 +17,7 @@ import {
   setUnauthorizedHandler,
   storeTokens,
 } from '../lib/api';
-import type { Business, User } from '../lib/types';
+import type { Business, UiMode, User } from '../lib/types';
 
 const ACTIVE_BUSINESS_KEY = 'khoebo_active_business';
 
@@ -32,6 +32,7 @@ interface AuthContextValue {
     email?: string;
     phoneNumber?: string;
     password: string;
+    uiMode?: UiMode;
   }) => Promise<void>;
   signOut: () => Promise<void>;
   refreshBusinesses: () => Promise<Business[]>;
@@ -118,6 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email?: string;
       phoneNumber?: string;
       password: string;
+      uiMode?: UiMode;
     }) => {
       const email = input.email?.trim() || undefined;
       const phoneNumber = input.phoneNumber?.trim() || undefined;
@@ -128,6 +130,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password: input.password,
       });
       await signIn(email ?? phoneNumber ?? '', input.password);
+      if (input.uiMode) {
+        const updated = await api.auth.updateProfile({ ui_mode: input.uiMode });
+        setUser(updated);
+      }
     },
     [signIn],
   );

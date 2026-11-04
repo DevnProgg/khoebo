@@ -7,15 +7,19 @@ import { Button, Header, Screen, TextField } from '../../components/ui';
 import { ApiError } from '../../lib/api';
 import { colors, spacing, type } from '../../lib/theme';
 import { useAuth } from '../../providers/AuthProvider';
+import { useLanguage } from '../../providers/LanguageProvider';
+import type { UiMode } from '../../lib/types';
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { register } = useAuth();
+  const { t } = useLanguage();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [uiMode, setUiMode] = useState<UiMode>('simple');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,6 +60,7 @@ export default function RegisterScreen() {
         email: trimmedEmail || undefined,
         phoneNumber: trimmedPhone || undefined,
         password,
+        uiMode,
       });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Could not create your account.');
@@ -122,6 +127,28 @@ export default function RegisterScreen() {
             <Text style={styles.hintText}>
               Add at least one contact: an email or a phone number.
             </Text>
+          </View>
+
+          <View style={styles.modeSection}>
+            <Text style={styles.modeTitle}>{t('modeTitle')}</Text>
+            <View style={styles.modeOptions}>
+              {(['simple', 'advanced'] as const).map((option) => (
+                <Pressable
+                  key={option}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: uiMode === option }}
+                  onPress={() => setUiMode(option)}
+                  style={[styles.modeOption, uiMode === option && styles.modeSelected]}
+                >
+                  <Text style={[styles.modeLabel, uiMode === option && styles.modeLabelSelected]}>
+                    {option === 'simple' ? t('simpleMode') : t('advancedMode')}
+                  </Text>
+                  <Text style={styles.modeBody}>
+                    {option === 'simple' ? t('modeSimpleBody') : t('modeAdvancedBody')}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
           </View>
           <TextField
             label="Password"
@@ -216,6 +243,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     flex: 1,
   },
+  modeSection: { gap: spacing.sm },
+  modeTitle: { ...type.bodyStrong, color: colors.ink },
+  modeOptions: { flexDirection: 'row', gap: spacing.sm },
+  modeOption: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 12,
+    padding: spacing.md,
+    gap: 2,
+  },
+  modeSelected: { backgroundColor: colors.primarySoft, borderColor: colors.primary },
+  modeLabel: { ...type.bodyStrong, color: colors.ink },
+  modeLabelSelected: { color: colors.primaryDark },
+  modeBody: { ...type.tiny, color: colors.inkMuted },
   errorBox: {
     backgroundColor: colors.dangerSoft,
     borderRadius: spacing.md,

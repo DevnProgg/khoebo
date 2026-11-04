@@ -1,8 +1,9 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy import (
+    Date,
     DateTime,
     Enum,
     ForeignKey,
@@ -15,7 +16,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin
-from app.models.enums import PaymentMethod, SaleStatus
+from app.models.enums import EntrySource, PaymentMethod, SaleStatus
 
 
 def _status_enum() -> Enum:
@@ -61,6 +62,18 @@ class Sale(TimestampMixin, Base):
         Numeric(14, 2), nullable=False, default=Decimal("0")
     )
     total: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+    effective_date: Mapped[date] = mapped_column(Date, nullable=False)
+    entry_source: Mapped[EntrySource] = mapped_column(
+        Enum(
+            EntrySource,
+            native_enum=False,
+            length=20,
+            values_callable=lambda enum_cls: [item.value for item in enum_cls],
+        ),
+        default=EntrySource.live,
+        nullable=False,
+    )
+    idempotency_key: Mapped[str | None] = mapped_column(String(120), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
