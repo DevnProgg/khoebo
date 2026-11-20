@@ -48,10 +48,23 @@ app.add_middleware(
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):  # type: ignore[no-untyped-def]
     response = await call_next(request)
+    path = request.url.path
+    if path == "/sw.js":
+        cache_policy = "no-cache, must-revalidate"
+    elif path.endswith(".webmanifest"):
+        cache_policy = "public, max-age=3600"
+    elif path.startswith("/_expo/static/"):
+        cache_policy = "public, max-age=31536000, immutable"
+    elif path.startswith(("/assets/", "/icons/")) or path.endswith((".png", ".ico", ".ttf", ".wasm", ".svg")):
+        cache_policy = "public, max-age=86400"
+    elif path == "/" or path.endswith(".html"):
+        cache_policy = "no-cache"
+    else:
+        cache_policy = "no-store"
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "DENY")
     response.headers.setdefault("Referrer-Policy", "no-referrer")
-    response.headers.setdefault("Cache-Control", "no-store")
+    response.headers.setdefault("Cache-Control", cache_policy)
     return response
 
 

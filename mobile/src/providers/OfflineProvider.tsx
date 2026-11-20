@@ -1,7 +1,7 @@
 import NetInfo, { type NetInfoState } from '@react-native-community/netinfo';
 import { Ionicons } from '@expo/vector-icons';
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { queryClient } from '../lib/query';
 import { flushOfflineQueue } from '../lib/api';
 import { getQueuedRequestCount } from '../lib/offline';
@@ -71,8 +71,8 @@ function OfflineBanner({
       <View style={styles.copy}>
         <Text style={styles.title}>{t('offline')}</Text>
         <Text style={styles.message} numberOfLines={2}>
-          {t('offlineMessage')}
-          {pendingCount ? ` ${pendingCount} ${t('pendingChanges')}.` : ''}
+          {Platform.OS === 'web' ? t('offlineWebMessage') : t('offlineMessage')}
+          {Platform.OS !== 'web' && pendingCount ? ` ${pendingCount} ${t('pendingChanges')}.` : ''}
         </Text>
       </View>
       <Pressable

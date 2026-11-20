@@ -11,6 +11,7 @@ import { queryClient } from '../lib/query';
 import { AuthProvider } from '../providers/AuthProvider';
 import { LanguageProvider } from '../providers/LanguageProvider';
 import { OfflineProvider } from '../providers/OfflineProvider';
+import { PwaProvider } from '../providers/PwaProvider';
 import { ToastProvider } from '../providers/ToastProvider';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -26,28 +27,30 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <LanguageProvider>
-            <OfflineProvider>
-              <AuthProvider>
-                <ToastProvider>
-                  <StatusBar style="dark" />
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
-                      contentStyle: { backgroundColor: colors.background },
-                      animation: 'fade',
-                    }}
-                  >
-                    <Stack.Screen name="index" />
-                    <Stack.Screen name="(auth)" />
-                    <Stack.Screen name="(app)" />
-                  </Stack>
-                </ToastProvider>
-              </AuthProvider>
-            </OfflineProvider>
-          </LanguageProvider>
-        </QueryClientProvider>
+        <PwaProvider>
+          <QueryClientProvider client={queryClient}>
+            <LanguageProvider>
+              <OfflineProvider>
+                <AuthProvider>
+                  <ToastProvider>
+                    <StatusBar style="dark" />
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        contentStyle: { backgroundColor: colors.background },
+                        animation: 'fade',
+                      }}
+                    >
+                      <Stack.Screen name="index" />
+                      <Stack.Screen name="(auth)" />
+                      <Stack.Screen name="(app)" />
+                    </Stack>
+                  </ToastProvider>
+                </AuthProvider>
+              </OfflineProvider>
+            </LanguageProvider>
+          </QueryClientProvider>
+        </PwaProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

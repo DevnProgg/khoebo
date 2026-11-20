@@ -19,12 +19,14 @@ import { titleCase } from '../../../lib/format';
 import { colors, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useLanguage } from '../../../providers/LanguageProvider';
+import { usePwa } from '../../../providers/PwaProvider';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, business, signOut } = useAuth();
   const { role } = useBusinessRole();
   const { language, setLanguage, t } = useLanguage();
+  const { canInstall, isInstalled, showInstallSheet } = usePwa();
 
   return (
     <Screen>
@@ -95,8 +97,17 @@ export default function SettingsScreen() {
               'Simple, connected business management. Sell, track stock and keep clean books.',
             )
           }
-          last
+          last={!canInstall || isInstalled}
         />
+        {canInstall && !isInstalled ? (
+          <MenuRow
+            icon="download-outline"
+            title="Install Khoebo"
+            subtitle="Add Khoebo to your home screen"
+            onPress={showInstallSheet}
+            last
+          />
+        ) : null}
       </Card>
 
       <SectionHeader title={t('language')} />

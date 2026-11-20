@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from fastapi.testclient import TestClient
+
+DIST_DIR = Path(__file__).resolve().parents[1] / "mobile" / "dist"
 
 
 def test_serve_index_html(client: TestClient) -> None:
@@ -36,8 +40,9 @@ def test_serve_favicon(client: TestClient) -> None:
 
 
 def test_serve_expo_static_asset(client: TestClient) -> None:
-    # Test serving a bundle from _expo/static/js/web
-    response = client.get("/_expo/static/js/web/entry-bf5f6d55ea3d9178b96adfa5cac28dc4.js")
+    bundles = sorted((DIST_DIR / "_expo" / "static" / "js" / "web").glob("entry-*.js"))
+    assert bundles
+    response = client.get(f"/_expo/static/js/web/{bundles[0].name}")
     assert response.status_code == 200
     assert len(response.content) > 0
 

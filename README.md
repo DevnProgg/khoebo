@@ -239,7 +239,7 @@ Refunds reverse the original entry and return stock.
 See `.env.example`. Important settings:
 
 - `SECRET_KEY` — required, at least 32 characters in production
-- `DATABASE_URL` — SQLite or `postgresql+psycopg://...`
+- `DATABASE_URL` — SQLite, PostgreSQL, or Supabase PostgreSQL URI
 - `ACCESS_TOKEN_EXPIRE_MINUTES` (default 15)
 - `REFRESH_TOKEN_EXPIRE_DAYS` (default 7)
 - `AUTO_CREATE_TABLES` — development only
@@ -260,7 +260,26 @@ uvicorn app.main:app
 ```
 
 The migrations are dialect-neutral: UUIDs use SQLAlchemy `Uuid`, money uses
-`Numeric`, and enums are stored as portable `VARCHAR` values.
+`Numeric`, and enums are stored as portable `VARCHAR` values. A ready-to-run
+PostgreSQL script is also available at `sql/postgres_schema.sql`.
+
+### Using Supabase PostgreSQL
+
+Copy a connection URI from **Project Settings → Database → Connection string**
+and use it as `DATABASE_URL`. The backend accepts both `postgres://` and
+`postgresql://` URIs, switches them to the installed `psycopg` driver, and adds
+`sslmode=require` for Supabase hosts. URL-encode the database password.
+
+```bash
+export DATABASE_URL='postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres'
+export ENVIRONMENT=production
+export AUTO_CREATE_TABLES=false
+alembic upgrade head
+uvicorn app.main:app
+```
+
+Alternatively, paste `sql/postgres_schema.sql` into the Supabase SQL editor, then
+set the same environment variables and start the backend without running Alembic.
 
 ---
 
