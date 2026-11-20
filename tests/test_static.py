@@ -1,8 +1,12 @@
+import re
+import subprocess
 from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-DIST_DIR = Path(__file__).resolve().parents[1] / "mobile" / "dist"
+ROOT = Path(__file__).resolve().parents[1]
+DIST_DIR = ROOT / "mobile" / "dist"
+BUNDLE_RE = re.compile(r'src="(/_expo/static/js/web/[^"]+\.js)"')
 
 
 def test_serve_index_html(client: TestClient) -> None:
@@ -52,6 +56,24 @@ def test_spa_fallback_for_dynamic_route(client: TestClient) -> None:
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
     assert "<!DOCTYPE html>" in response.text
+
+
+def test_all_referenced_bundles_exist_and_are_not_git_ignored() -> None:
+    references = {
+        match
+        for html in DIST_DIR.rglob("*.html")
+        for match in BUNDLE_RE.findall(html.read_text(encoding="utf-8"))
+    }
+    assert references
+
+    for reference in sorted(references):
+        path = DIST_DIR / reference.lstrip("/")
+        assert path.exists(), reference
+        ignored = subprocess.run(
+            ["git", "check-ignore", "-q", path.relative_to(ROOT).as_posix()],
+            cwd=ROOT,
+        )
+        assert ignored.returncode != 0, f"{reference} is ignored by git"
 
 
 def test_nonexistent_asset_returns_404(client: TestClient) -> None:
