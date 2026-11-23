@@ -100,6 +100,12 @@ export default function MoreScreen() {
           title={t('salesHistory')}
           subtitle={t('salesHistoryShort')}
           onPress={() => router.push('/(app)/sales-history')}
+        />
+        <MenuRow
+          icon="download-outline"
+          title={t('dataExport')}
+          subtitle={t('dataExportSubtitle')}
+          onPress={() => router.push('/(app)/export')}
           last
         />
       </Card>

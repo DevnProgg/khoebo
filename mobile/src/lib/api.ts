@@ -1,4 +1,6 @@
+import { File, Paths } from 'expo-file-system';
 import * as SecureStore from 'expo-secure-store';
+import * as Sharing from 'expo-sharing';
 import { Platform } from 'react-native';
 
 import type {
@@ -26,6 +28,7 @@ import type {
   TrialBalance,
   User,
 } from './types';
+import { exportFilename, exportPath, type ExportFormat } from './export-file';
 import {
   cacheKey,
   cacheResponse,
@@ -247,6 +250,51 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return payload;
 }
 
+async function downloadExport(
+  businessId: string,
+  dataset: string,
+  format: ExportFormat,
+  startDate?: string,
+  endDate?: string,
+): Promise<void> {
+  const path = exportPath(businessId, { dataset, format, startDate, endDate });
+  const filename = exportFilename(dataset, endDate, format);
+  const mimeType =
+    format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  const headers: Record<string, string> = { Accept: mimeType };
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
+  const fetchFile = () => fetch(`${API_URL}${path}`, { headers });
+  let response = await fetchFile();
+  if (response.status === 401) {
+    if (await refreshSession()) {
+      response = await fetchFile();
+    } else {
+      await clearStoredTokens();
+      unauthorizedHandler?.();
+      throw new ApiError(401, 'Your session expired. Please sign in again.');
+    }
+  }
+  if (!response.ok) throw new ApiError(response.status, 'Could not create the export.');
+
+  if (isWeb) {
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return;
+  }
+
+  const file = new File(Paths.cache, filename);
+  file.create({ overwrite: true });
+  await file.write(await response.arrayBuffer());
+  await Sharing.shareAsync(file.uri, { mimeType, dialogTitle: filename });
+}
+
 export async function flushOfflineQueue(): Promise<number> {
   let synced = 0;
   const queued = await getQueuedRequests();
@@ -456,6 +504,19 @@ export const api = {
           end_date: endDate,
         })}`,
       ),
+  },
+  exports: {
+    datasets: (businessId: string) =>
+      request<{ datasets: { id: string; title: string }[] }>(
+        `/businesses/${businessId}/exports`,
+      ),
+    download: (
+      businessId: string,
+      dataset: string,
+      format: ExportFormat,
+      startDate?: string,
+      endDate?: string,
+    ) => downloadExport(businessId, dataset, format, startDate, endDate),
   },
   analytics: {
     overview: (businessId: string, startDate: string, endDate: string) =>

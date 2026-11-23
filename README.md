@@ -193,6 +193,7 @@ All routes are under `/api/v1`.
 | Sales | `/businesses/{id}/sales`, `/sales/{sid}/refund` |
 | Accounting | `/businesses/{id}/accounts`, `/journal-entries`, `/expenses` |
 | Reports | `/businesses/{id}/reports/trial-balance`, `/income-statement`, `/inventory-valuation`, `/sales-summary` |
+| Exports | `GET /businesses/{id}/exports` (catalog), `GET /businesses/{id}/exports/{dataset}?format=pdf\|xlsx` — optional `start_date` / `end_date`; `all` bundles every dataset |
 | Analytics | `/businesses/{id}/analytics/overview` |
 | Reminders | `/businesses/{id}/reminders`, `/due`, `/{rid}/trigger`, `/{rid}/snooze` |
 
