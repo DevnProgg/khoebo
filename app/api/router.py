@@ -5,6 +5,7 @@ from app.api.routes import (
     analytics,
     auth,
     businesses,
+    exports,
     inventory,
     reminders,
     reports,
@@ -20,5 +21,6 @@ api_router.include_router(inventory.router)
 api_router.include_router(sales.router)
 api_router.include_router(accounting.router)
 api_router.include_router(reports.router)
+api_router.include_router(exports.router)
 api_router.include_router(analytics.router)
 api_router.include_router(reminders.router)
