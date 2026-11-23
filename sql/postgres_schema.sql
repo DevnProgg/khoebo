@@ -260,5 +260,17 @@ ALTER TABLE businesses ALTER COLUMN currency SET DEFAULT 'LSL';
 
 UPDATE alembic_version SET version_num='3d8e6e1f4a2b' WHERE alembic_version.version_num = '17181c55d223';
 
+-- Running upgrade 3d8e6e1f4a2b -> e4353398e982
+
+ALTER TABLE businesses ADD COLUMN business_model VARCHAR(20);
+
+UPDATE businesses SET business_model = 'hybrid';
+
+ALTER TABLE businesses ALTER COLUMN business_model SET NOT NULL;
+
+ALTER TABLE businesses ALTER COLUMN business_model SET DEFAULT 'stock';
+
+UPDATE alembic_version SET version_num='e4353398e982' WHERE alembic_version.version_num = '3d8e6e1f4a2b';
+
 COMMIT;
 

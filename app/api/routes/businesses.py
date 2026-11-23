@@ -58,6 +58,7 @@ def create_business(
         name=payload.name.strip(),
         slug=_unique_slug(db, payload.name),
         currency=payload.currency,
+        business_model=payload.business_model,
         owner_id=user.id,
     )
     db.add(business)
@@ -104,6 +105,8 @@ def update_business(
         business.name = payload.name.strip()
     if payload.currency is not None:
         business.currency = payload.currency
+    if payload.business_model is not None:
+        business.business_model = payload.business_model
     db.commit()
     db.refresh(business)
     return business

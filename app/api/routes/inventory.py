@@ -5,7 +5,8 @@ from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_membership, require_roles
+from app.api.deps import get_membership, require_capability, require_roles
+from app.core.capabilities import Capability
 from app.db.session import get_db
 from app.models.business import BusinessMember
 from app.models.enums import MemberRole
@@ -40,6 +41,7 @@ def create_product(
     db: Session = Depends(get_db),
 ) -> Product:
     require_roles(membership, MemberRole.owner, MemberRole.admin)
+    require_capability(membership, Capability.inventory)
     sku = payload.sku.strip()
     exists = db.scalar(
         select(Product.id).where(
@@ -118,6 +120,7 @@ def update_product(
     db: Session = Depends(get_db),
 ) -> Product:
     require_roles(membership, MemberRole.owner, MemberRole.admin)
+    require_capability(membership, Capability.inventory)
     product = _get_product(db, membership.business_id, product_id)
     data = payload.model_dump(exclude_unset=True)
     for field, value in data.items():
@@ -134,6 +137,7 @@ def deactivate_product(
     db: Session = Depends(get_db),
 ) -> None:
     require_roles(membership, MemberRole.owner, MemberRole.admin)
+    require_capability(membership, Capability.inventory)
     product = _get_product(db, membership.business_id, product_id)
     product.is_active = False
     db.commit()
@@ -150,6 +154,7 @@ def create_stock_movement(
     membership: BusinessMember = Depends(get_membership),
     db: Session = Depends(get_db),
 ) -> StockMovement:
+    require_capability(membership, Capability.inventory)
     product = _get_product(db, membership.business_id, product_id)
     try:
         movement = apply_stock_movement(

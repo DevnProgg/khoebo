@@ -4,12 +4,21 @@ from sqlalchemy import Enum, ForeignKey, String, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin
-from app.models.enums import MemberRole
+from app.models.enums import BusinessModel, MemberRole
 
 
 def _role_enum() -> Enum:
     return Enum(
         MemberRole,
+        native_enum=False,
+        length=20,
+        values_callable=lambda enum_cls: [item.value for item in enum_cls],
+    )
+
+
+def _business_model_enum() -> Enum:
+    return Enum(
+        BusinessModel,
         native_enum=False,
         length=20,
         values_callable=lambda enum_cls: [item.value for item in enum_cls],
@@ -23,6 +32,12 @@ class Business(TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     slug: Mapped[str] = mapped_column(String(120), unique=True, index=True, nullable=False)
     currency: Mapped[str] = mapped_column(String(3), default="LSL", nullable=False)
+    business_model: Mapped[BusinessModel] = mapped_column(
+        _business_model_enum(),
+        default=BusinessModel.stock,
+        server_default=BusinessModel.stock.value,
+        nullable=False,
+    )
     owner_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("users.id", ondelete="RESTRICT"), index=True, nullable=False
     )

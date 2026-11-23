@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, EmailStr, Field
 
-from app.models.enums import MemberRole
+from app.models.enums import BusinessModel, MemberRole
 from app.schemas.auth import UserOut
 from app.schemas.common import ORMModel
 
@@ -12,11 +12,13 @@ from app.schemas.common import ORMModel
 class BusinessCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
     currency: Literal["LSL"] = "LSL"
+    business_model: BusinessModel = BusinessModel.stock
 
 
 class BusinessUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255)
     currency: Literal["LSL"] | None = None
+    business_model: BusinessModel | None = None
 
 
 class BusinessOut(ORMModel):
@@ -24,6 +26,7 @@ class BusinessOut(ORMModel):
     name: str
     slug: str
     currency: str
+    business_model: BusinessModel
     owner_id: uuid.UUID
     created_at: datetime
 
