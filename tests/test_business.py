@@ -257,7 +257,10 @@ def test_deleting_business_cascades_data(
 
     client.post(
         f"/api/v1/businesses/{business_id}/sales",
-        json={"items": [{"product_id": product["id"], "quantity": "1"}]},
+        json={
+            "items": [{"product_id": product["id"], "quantity": "1"}],
+            "amount_paid": "10.00",
+        },
         headers=owner["headers"],
     )
     client.post(

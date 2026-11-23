@@ -30,7 +30,14 @@ import {
   styles as uiStyles,
 } from '../../../components/ui';
 import { api, type SaleInput } from '../../../lib/api';
-import { formatMoney, formatNumber, toNumber } from '../../../lib/format';
+import {
+  formatMoney,
+  formatNumber,
+  generateCashShortcuts,
+  roundMoney,
+  titleCase,
+  toNumber,
+} from '../../../lib/format';
 import { CURRENCY_CODE, colors, radius, shadow, spacing, type } from '../../../lib/theme';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useToast } from '../../../providers/ToastProvider';
@@ -62,6 +69,8 @@ export default function SellScreen() {
   const [discount, setDiscount] = useState('');
   const [taxRate, setTaxRate] = useState('');
   const [payment, setPayment] = useState<PaymentMethod>('cash');
+  const [amountReceived, setAmountReceived] = useState('');
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [notes, setNotes] = useState('');
   const [completed, setCompleted] = useState<Sale | null>(null);
 
@@ -89,7 +98,37 @@ export default function SellScreen() {
   const discountValue = Math.min(Math.max(Number.parseFloat(discount) || 0, 0), subtotal);
   const taxValue = Math.max(0, ((subtotal - discountValue) * (Number.parseFloat(taxRate) || 0)) / 100);
   const total = subtotal - discountValue + taxValue;
+  const roundedTotal = roundMoney(total);
   const itemCount = cart.reduce((sum, line) => sum + line.quantity, 0);
+
+  const cashShortcuts = useMemo(() => generateCashShortcuts(roundedTotal), [roundedTotal]);
+
+  const isCash = payment === 'cash';
+  const parsedReceived = amountReceived.trim() === '' ? null : Number.parseFloat(amountReceived);
+  const receivedValue =
+    parsedReceived !== null && Number.isFinite(parsedReceived) ? roundMoney(parsedReceived) : null;
+
+  const cashStatus = useMemo(() => {
+    if (!isCash) return 'valid';
+    if (receivedValue === null) return 'unentered';
+    if (receivedValue < roundedTotal) return 'insufficient';
+    if (receivedValue === roundedTotal) return 'exact';
+    return 'change';
+  }, [isCash, receivedValue, roundedTotal]);
+
+  const changeDue =
+    receivedValue !== null && receivedValue >= roundedTotal
+      ? roundMoney(receivedValue - roundedTotal)
+      : 0;
+  const remainingBalance =
+    receivedValue !== null && receivedValue < roundedTotal
+      ? roundMoney(roundedTotal - receivedValue)
+      : roundedTotal;
+
+  const onSelectShortcut = (amount: number) => {
+    setAmountReceived(amount.toFixed(amount % 1 === 0 ? 0 : 2));
+    Haptics.selectionAsync().catch(() => undefined);
+  };
 
   const addToCart = (product: Product) => {
     const stock = toNumber(product.stock_quantity);
@@ -127,6 +166,8 @@ export default function SellScreen() {
     setTaxRate('');
     setNotes('');
     setPayment('cash');
+    setAmountReceived('');
+    setShowMoreOptions(false);
   };
 
   const sale = useMutation({
@@ -150,6 +191,12 @@ export default function SellScreen() {
 
   const completeSale = () => {
     if (!cart.length) return;
+    if (isCash) {
+      if (receivedValue === null || receivedValue < roundedTotal) {
+        toast.show(t('insufficientCash'), 'error');
+        return;
+      }
+    }
     sale.mutate({
       items: cart.map((line) => ({
         product_id: line.product.id,
@@ -160,6 +207,7 @@ export default function SellScreen() {
       discount_amount: discountValue,
       tax_rate: Number.parseFloat(taxRate) || 0,
       payment_method: payment,
+      amount_paid: isCash ? (receivedValue ?? roundedTotal) : roundedTotal,
       notes: notes.trim() || null,
     });
   };
@@ -383,59 +431,6 @@ export default function SellScreen() {
                 ))}
               </View>
 
-              <View style={styles.form}>
-                <TextField
-                  label="Customer name"
-                  placeholder="Walk-in customer"
-                  value={customerName}
-                  onChangeText={setCustomerName}
-                  icon="person-outline"
-                />
-                <View style={styles.twoCols}>
-                  <TextField
-                    label="Discount"
-                    placeholder="0.00"
-                    value={discount}
-                    onChangeText={setDiscount}
-                    keyboardType="decimal-pad"
-                    icon="pricetag-outline"
-                    containerStyle={styles.flex}
-                  />
-                  <TextField
-                    label="Tax rate %"
-                    placeholder="0"
-                    value={taxRate}
-                    onChangeText={setTaxRate}
-                    keyboardType="decimal-pad"
-                    icon="pie-chart-outline"
-                    containerStyle={styles.flex}
-                  />
-                </View>
-
-                <View style={styles.paymentWrap}>
-                  <Text style={styles.fieldLabel}>Payment method</Text>
-                  <View style={styles.chips}>
-                    {paymentMethods.map((method) => (
-                      <Chip
-                        key={method.value}
-                        label={method.label}
-                        icon={method.icon}
-                        selected={payment === method.value}
-                        onPress={() => setPayment(method.value)}
-                      />
-                    ))}
-                  </View>
-                </View>
-
-                <TextField
-                  label="Notes"
-                  placeholder="Optional note"
-                  value={notes}
-                  onChangeText={setNotes}
-                  multiline
-                />
-              </View>
-
               <View style={styles.totals}>
                 <View style={styles.totalRow}>
                   <Text style={styles.totalLabel}>Subtotal</Text>
@@ -454,9 +449,187 @@ export default function SellScreen() {
                   </View>
                 ) : null}
                 <View style={[styles.totalRow, styles.grandTotalRow]}>
-                  <Text style={styles.grandTotalLabel}>Total</Text>
+                  <Text style={styles.grandTotalLabel}>Total due</Text>
                   <Text style={styles.grandTotal}>{formatMoney(total, currency)}</Text>
                 </View>
+              </View>
+
+              <View style={styles.paymentWrap}>
+                <Text style={styles.fieldLabel}>Payment method</Text>
+                <View style={styles.chips}>
+                  {paymentMethods.map((method) => (
+                    <Chip
+                      key={method.value}
+                      label={method.label}
+                      icon={method.icon}
+                      selected={payment === method.value}
+                      onPress={() => setPayment(method.value)}
+                    />
+                  ))}
+                </View>
+              </View>
+
+              {isCash ? (
+                <View style={styles.cashSection}>
+                  <TextField
+                    label={t('amountReceived')}
+                    placeholder={formatMoney(roundedTotal, currency)}
+                    value={amountReceived}
+                    onChangeText={setAmountReceived}
+                    keyboardType="decimal-pad"
+                    icon="cash-outline"
+                  />
+
+                  {cashShortcuts.length > 0 ? (
+                    <View style={styles.shortcutsWrap}>
+                      {cashShortcuts.map((amount, idx) => {
+                        const isExact = idx === 0;
+                        const isSelected =
+                          receivedValue !== null && roundMoney(amount) === receivedValue;
+                        return (
+                          <Pressable
+                            key={amount}
+                            onPress={() => onSelectShortcut(amount)}
+                            style={[
+                              styles.shortcutChip,
+                              isSelected && styles.shortcutChipSelected,
+                              isExact && styles.shortcutChipExact,
+                            ]}
+                          >
+                            <Text
+                              style={[
+                                styles.shortcutText,
+                                isSelected && styles.shortcutTextSelected,
+                                isExact && styles.shortcutTextExact,
+                              ]}
+                            >
+                              {isExact
+                                ? `${t('exactAmount')}: ${formatMoney(amount, currency)}`
+                                : formatMoney(amount, currency)}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  ) : null}
+
+                  {cashStatus === 'change' ? (
+                    <View style={[styles.feedbackBox, styles.feedbackBoxSuccess]}>
+                      <View style={styles.feedbackRow}>
+                        <View style={styles.flex}>
+                          <Text style={styles.feedbackLabelSuccess}>{t('changeDue')}</Text>
+                          <Text style={styles.feedbackAmountSuccess}>
+                            {formatMoney(changeDue, currency)}
+                          </Text>
+                        </View>
+                        <Ionicons name="checkmark-circle" size={28} color={colors.success} />
+                      </View>
+                    </View>
+                  ) : cashStatus === 'exact' ? (
+                    <View style={[styles.feedbackBox, styles.feedbackBoxSuccess]}>
+                      <View style={styles.feedbackRow}>
+                        <View style={styles.flex}>
+                          <Text style={styles.feedbackLabelSuccess}>{t('changeDue')}</Text>
+                          <Text style={styles.feedbackAmountSuccess}>
+                            {formatMoney(0, currency)} · {t('paidInFull')}
+                          </Text>
+                        </View>
+                        <Ionicons name="checkmark-circle" size={28} color={colors.success} />
+                      </View>
+                    </View>
+                  ) : cashStatus === 'insufficient' ? (
+                    <View style={[styles.feedbackBox, styles.feedbackBoxWarning]}>
+                      <View style={styles.feedbackRow}>
+                        <View style={styles.flex}>
+                          <Text style={styles.feedbackLabelWarning}>{t('remainingBalance')}</Text>
+                          <Text style={styles.feedbackAmountWarning}>
+                            {formatMoney(remainingBalance, currency)}
+                          </Text>
+                          <Text style={styles.feedbackSubtextWarning}>
+                            {t('insufficientCash')}
+                          </Text>
+                        </View>
+                        <Ionicons name="alert-circle" size={28} color={colors.danger} />
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={[styles.feedbackBox, styles.feedbackBoxNeutral]}>
+                      <Text style={styles.feedbackNeutralText}>
+                        Enter cash received from customer or select a quick shortcut.
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <View style={[styles.feedbackBox, styles.feedbackBoxNeutral]}>
+                  <View style={styles.feedbackRow}>
+                    <View style={styles.flex}>
+                      <Text style={styles.feedbackNeutralTitle}>
+                        {titleCase(payment)} payment
+                      </Text>
+                      <Text style={styles.feedbackNeutralText}>
+                        Charge {formatMoney(roundedTotal, currency)} directly via {payment}.
+                      </Text>
+                    </View>
+                    <Ionicons name="card-outline" size={24} color={colors.primary} />
+                  </View>
+                </View>
+              )}
+
+              <View style={styles.moreOptionsWrap}>
+                <Pressable
+                  onPress={() => setShowMoreOptions((prev) => !prev)}
+                  style={styles.moreOptionsToggle}
+                  hitSlop={8}
+                >
+                  <Ionicons
+                    name={showMoreOptions ? 'chevron-up-circle-outline' : 'add-circle-outline'}
+                    size={18}
+                    color={colors.primary}
+                  />
+                  <Text style={styles.moreOptionsToggleText}>
+                    {showMoreOptions ? t('hideOptions') : t('moreOptions')}
+                  </Text>
+                </Pressable>
+
+                {showMoreOptions ? (
+                  <Animated.View entering={FadeInDown.duration(200)} style={styles.form}>
+                    <TextField
+                      label="Customer name"
+                      placeholder="Walk-in customer"
+                      value={customerName}
+                      onChangeText={setCustomerName}
+                      icon="person-outline"
+                    />
+                    <View style={styles.twoCols}>
+                      <TextField
+                        label="Discount"
+                        placeholder="0.00"
+                        value={discount}
+                        onChangeText={setDiscount}
+                        keyboardType="decimal-pad"
+                        icon="pricetag-outline"
+                        containerStyle={styles.flex}
+                      />
+                      <TextField
+                        label="Tax rate %"
+                        placeholder="0"
+                        value={taxRate}
+                        onChangeText={setTaxRate}
+                        keyboardType="decimal-pad"
+                        icon="pie-chart-outline"
+                        containerStyle={styles.flex}
+                      />
+                    </View>
+                    <TextField
+                      label="Notes"
+                      placeholder="Optional note"
+                      value={notes}
+                      onChangeText={setNotes}
+                      multiline
+                    />
+                  </Animated.View>
+                ) : null}
               </View>
 
               <Button
@@ -464,7 +637,11 @@ export default function SellScreen() {
                 icon="checkmark-circle-outline"
                 onPress={completeSale}
                 loading={sale.isPending}
-                disabled={sale.isPending || !cart.length}
+                disabled={
+                  sale.isPending ||
+                  !cart.length ||
+                  (isCash && (receivedValue === null || receivedValue < roundedTotal))
+                }
               />
             </ScrollView>
           </View>
@@ -482,6 +659,45 @@ export default function SellScreen() {
               {formatMoney(completed?.total, currency)}
             </Text>
             <Text style={styles.successRef}>{completed?.reference}</Text>
+
+            {completed?.payment_method === 'cash' ? (
+              <View style={styles.successBreakdown}>
+                <View style={styles.successRow}>
+                  <Text style={styles.successLabel}>Total due</Text>
+                  <Text style={styles.successValue}>
+                    {formatMoney(completed.total, currency)}
+                  </Text>
+                </View>
+                <View style={styles.successRow}>
+                  <Text style={styles.successLabel}>Cash received</Text>
+                  <Text style={styles.successValue}>
+                    {formatMoney(completed.amount_paid ?? completed.total, currency)}
+                  </Text>
+                </View>
+                <View style={[styles.successRow, styles.successChangeRow]}>
+                  <Text style={styles.successChangeLabel}>Change</Text>
+                  <Text style={styles.successChangeValue}>
+                    {formatMoney(completed.change_given ?? 0, currency)}
+                  </Text>
+                </View>
+              </View>
+            ) : completed ? (
+              <View style={styles.successBreakdown}>
+                <View style={styles.successRow}>
+                  <Text style={styles.successLabel}>Payment</Text>
+                  <Text style={styles.successValue}>
+                    {titleCase(completed.payment_method)}
+                  </Text>
+                </View>
+                <View style={styles.successRow}>
+                  <Text style={styles.successLabel}>Amount paid</Text>
+                  <Text style={styles.successValue}>
+                    {formatMoney(completed.amount_paid ?? completed.total, currency)}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
+
             <View style={styles.successActions}>
               <Button
                 title="New sale"
@@ -843,6 +1059,160 @@ const styles = StyleSheet.create({
   grandTotal: {
     ...type.heading,
     color: colors.primary,
+  },
+  cashSection: {
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  shortcutsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+    marginTop: -spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  shortcutChip: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.surfaceAlt,
+  },
+  shortcutChipSelected: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primarySoft,
+  },
+  shortcutChipExact: {
+    borderColor: colors.primary,
+  },
+  shortcutText: {
+    ...type.small,
+    color: colors.inkSoft,
+    fontWeight: '600',
+  },
+  shortcutTextSelected: {
+    color: colors.primary,
+    fontWeight: '700',
+  },
+  shortcutTextExact: {
+    color: colors.primary,
+    fontWeight: '700',
+  },
+  feedbackBox: {
+    borderRadius: radius.md,
+    padding: spacing.md,
+    borderWidth: 1,
+  },
+  feedbackBoxSuccess: {
+    backgroundColor: colors.successSoft,
+    borderColor: colors.success,
+  },
+  feedbackBoxWarning: {
+    backgroundColor: colors.dangerSoft,
+    borderColor: colors.danger,
+  },
+  feedbackBoxNeutral: {
+    backgroundColor: colors.surfaceAlt,
+    borderColor: colors.line,
+  },
+  feedbackRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+  },
+  feedbackLabelSuccess: {
+    ...type.tiny,
+    color: colors.success,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  feedbackAmountSuccess: {
+    ...type.heading,
+    color: colors.success,
+    fontSize: 22,
+    marginTop: 2,
+  },
+  feedbackLabelWarning: {
+    ...type.tiny,
+    color: colors.danger,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  feedbackAmountWarning: {
+    ...type.heading,
+    color: colors.danger,
+    fontSize: 22,
+    marginTop: 2,
+  },
+  feedbackSubtextWarning: {
+    ...type.tiny,
+    color: colors.danger,
+    marginTop: 2,
+  },
+  feedbackNeutralTitle: {
+    ...type.bodyStrong,
+    color: colors.ink,
+  },
+  feedbackNeutralText: {
+    ...type.small,
+    color: colors.inkMuted,
+  },
+  moreOptionsWrap: {
+    marginVertical: spacing.sm,
+    gap: spacing.sm,
+  },
+  moreOptionsToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.xs,
+    alignSelf: 'flex-start',
+  },
+  moreOptionsToggleText: {
+    ...type.small,
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  successBreakdown: {
+    width: '100%',
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    marginVertical: spacing.xs,
+    gap: spacing.xs,
+  },
+  successRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  successLabel: {
+    ...type.small,
+    color: colors.inkSoft,
+  },
+  successValue: {
+    ...type.small,
+    color: colors.ink,
+    fontWeight: '600',
+  },
+  successChangeRow: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.line,
+    paddingTop: spacing.xs,
+    marginTop: 2,
+  },
+  successChangeLabel: {
+    ...type.bodyStrong,
+    color: colors.success,
+  },
+  successChangeValue: {
+    ...type.heading,
+    color: colors.success,
+    fontSize: 18,
   },
   successOverlay: {
     flex: 1,

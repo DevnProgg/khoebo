@@ -67,10 +67,21 @@ export default function SaleDetailScreen() {
           )}`,
       )
       .join('\n');
+    const isCash = data.payment_method === 'cash';
+    const paymentLine = isCash
+      ? `Cash received: ${formatMoney(data.amount_paid ?? data.total, currency)}\nChange: ${formatMoney(
+          data.change_given ?? 0,
+          currency,
+        )}`
+      : `Payment method: ${titleCase(data.payment_method)}\nAmount paid: ${formatMoney(
+          data.amount_paid ?? data.total,
+          currency,
+        )}`;
+
     await Share.share({
       message: `${business?.name ?? 'Khoebo'}\nSale ${data.reference}\n${formatDateTime(
         data.created_at,
-      )}\n\n${lines}\n\nTotal: ${formatMoney(data.total, currency)}`,
+      )}\n\n${lines}\n\nTotal: ${formatMoney(data.total, currency)}\n${paymentLine}`,
     }).catch(() => undefined);
   };
 
@@ -198,6 +209,33 @@ export default function SaleDetailScreen() {
           <Text style={styles.totalLabel}>Total</Text>
           <Text style={styles.totalValue}>{formatMoney(data.total, currency)}</Text>
         </View>
+        {data.payment_method === 'cash' ? (
+          <>
+            <Divider style={styles.divider} />
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Cash received</Text>
+              <Text style={styles.summaryValue}>
+                {formatMoney(data.amount_paid ?? data.total, currency)}
+              </Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.changeLabel}>Change given</Text>
+              <Text style={styles.changeValue}>
+                {formatMoney(data.change_given ?? 0, currency)}
+              </Text>
+            </View>
+          </>
+        ) : (
+          <>
+            <Divider style={styles.divider} />
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Amount paid</Text>
+              <Text style={styles.summaryValue}>
+                {formatMoney(data.amount_paid ?? data.total, currency)}
+              </Text>
+            </View>
+          </>
+        )}
       </Card>
 
       {data.notes ? (
@@ -347,6 +385,15 @@ const styles = StyleSheet.create({
   totalValue: {
     ...type.heading,
     color: colors.primary,
+  },
+  changeLabel: {
+    ...type.bodyStrong,
+    color: colors.success,
+  },
+  changeValue: {
+    ...type.bodyStrong,
+    color: colors.success,
+    fontSize: 16,
   },
   notes: {
     marginTop: spacing.lg,

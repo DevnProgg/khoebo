@@ -135,7 +135,10 @@ def test_record_sales_reminder_context(
 
     client.post(
         f"/api/v1/businesses/{business['id']}/sales",
-        json={"items": [{"product_id": product["id"], "quantity": "1"}]},
+        json={
+            "items": [{"product_id": product["id"], "quantity": "1"}],
+            "amount_paid": "10.00",
+        },
         headers=owner["headers"],
     )
     due = client.get(f"{base}/due", headers=owner["headers"]).json()

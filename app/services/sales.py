@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.business import Business
-from app.models.enums import SaleStatus, StockMovementType
+from app.models.enums import PaymentMethod, SaleStatus, StockMovementType
 from app.models.inventory import Product
 from app.models.sales import Sale, SaleItem
 from app.models.user import User
@@ -79,6 +79,17 @@ def create_sale(db: Session, *, business: Business, user: User, payload: SaleCre
     tax_amount = money(taxable * Decimal(payload.tax_rate) / Decimal("100"))
     total = money(taxable + tax_amount)
 
+    if payload.payment_method == PaymentMethod.cash:
+        amount_paid = (
+            money(payload.amount_paid) if payload.amount_paid is not None else None
+        )
+        if amount_paid is None or amount_paid < total:
+            raise SaleError("Amount received is less than the total due")
+        change_given = money(amount_paid - total)
+    else:
+        amount_paid = total
+        change_given = Decimal("0")
+
     sale = Sale(
         business_id=business.id,
         reference=_new_reference(),
@@ -90,6 +101,8 @@ def create_sale(db: Session, *, business: Business, user: User, payload: SaleCre
         tax_rate=Decimal(payload.tax_rate),
         tax_amount=tax_amount,
         total=total,
+        amount_paid=amount_paid,
+        change_given=change_given,
         notes=payload.notes,
         created_by=user.id,
         items=items,

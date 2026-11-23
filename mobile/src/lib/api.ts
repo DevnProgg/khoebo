@@ -293,6 +293,7 @@ export interface SaleInput {
   discount_amount?: number;
   tax_rate?: number;
   payment_method?: PaymentMethod;
+  amount_paid?: number;
   notes?: string | null;
 }
 

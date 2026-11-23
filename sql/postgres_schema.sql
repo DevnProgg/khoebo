@@ -272,5 +272,13 @@ ALTER TABLE businesses ALTER COLUMN business_model SET DEFAULT 'stock';
 
 UPDATE alembic_version SET version_num='e4353398e982' WHERE alembic_version.version_num = '3d8e6e1f4a2b';
 
+-- Running upgrade e4353398e982 -> 20ac806b791a
+
+ALTER TABLE sales ADD COLUMN amount_paid NUMERIC(14, 2);
+
+ALTER TABLE sales ADD COLUMN change_given NUMERIC(14, 2) DEFAULT 0 NOT NULL;
+
+UPDATE alembic_version SET version_num='20ac806b791a' WHERE alembic_version.version_num = 'e4353398e982';
+
 COMMIT;
 
