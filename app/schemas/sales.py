@@ -20,6 +20,7 @@ class SaleCreate(BaseModel):
     discount_amount: Money = 0
     tax_rate: Decimal = Field(default=0, ge=0, le=100, max_digits=5, decimal_places=2)
     payment_method: PaymentMethod = PaymentMethod.cash
+    amount_paid: Money | None = None
     notes: str | None = None
 
 
@@ -45,6 +46,8 @@ class SaleOut(ORMModel):
     tax_rate: Decimal
     tax_amount: Money
     total: Money
+    amount_paid: Money | None
+    change_given: Money
     notes: str | None
     created_by: uuid.UUID | None
     created_at: datetime

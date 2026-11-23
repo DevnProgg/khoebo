@@ -13,6 +13,7 @@ def _sale_payload(product_id: str, **overrides) -> dict:
         "discount_amount": "5.00",
         "tax_rate": "10",
         "payment_method": "cash",
+        "amount_paid": "100.00",
     }
     payload.update(overrides)
     return payload
@@ -263,3 +264,117 @@ def test_sales_are_isolated_between_businesses(
         headers=other_owner["headers"],
     )
     assert response.status_code == 404
+
+
+def _cash_payload(product_id: str, amount_paid: str | None = None, **overrides) -> dict:
+    payload = _sale_payload(product_id, **overrides)
+    if amount_paid is not None:
+        payload["amount_paid"] = amount_paid
+    return payload
+
+
+def test_cash_payment_stores_amount_paid_and_change_given(
+    client: TestClient, user_factory, business_factory, product_factory
+) -> None:
+    owner = user_factory()
+    business = business_factory(owner)
+    product = product_factory(business, owner, unit_price="10.00", cost_price="4.00")
+
+    sale = client.post(
+        f"/api/v1/businesses/{business['id']}/sales",
+        json=_cash_payload(product["id"], amount_paid="20.00"),
+        headers=owner["headers"],
+    )
+    assert sale.status_code == 201, sale.text
+    body = sale.json()
+    assert _q(body["total"]) == Decimal("16.50")
+    assert _q(body["amount_paid"]) == Decimal("20.00")
+    assert _q(body["change_given"]) == Decimal("3.50")
+
+
+def test_cash_payment_exact_amount_gives_zero_change(
+    client: TestClient, user_factory, business_factory, product_factory
+) -> None:
+    owner = user_factory()
+    business = business_factory(owner)
+    product = product_factory(business, owner, unit_price="10.00", cost_price="4.00")
+
+    sale = client.post(
+        f"/api/v1/businesses/{business['id']}/sales",
+        json=_cash_payload(product["id"], amount_paid="16.50"),
+        headers=owner["headers"],
+    )
+    assert sale.status_code == 201, sale.text
+    assert _q(sale.json()["change_given"]) == Decimal("0.00")
+
+
+def test_cash_payment_below_total_is_rejected(
+    client: TestClient, user_factory, business_factory, product_factory
+) -> None:
+    owner = user_factory()
+    business = business_factory(owner)
+    product = product_factory(business, owner, unit_price="10.00", cost_price="4.00")
+
+    sale = client.post(
+        f"/api/v1/businesses/{business['id']}/sales",
+        json=_cash_payload(product["id"], amount_paid="10.00"),
+        headers=owner["headers"],
+    )
+    assert sale.status_code == 400, sale.text
+
+    sales = client.get(
+        f"/api/v1/businesses/{business['id']}/sales", headers=owner["headers"]
+    )
+    assert sales.json() == []
+
+
+def test_cash_payment_without_amount_paid_is_rejected(
+    client: TestClient, user_factory, business_factory, product_factory
+) -> None:
+    owner = user_factory()
+    business = business_factory(owner)
+    product = product_factory(business, owner, unit_price="10.00", cost_price="4.00")
+
+    payload = _sale_payload(product["id"])
+    payload.pop("amount_paid", None)
+
+    sale = client.post(
+        f"/api/v1/businesses/{business['id']}/sales",
+        json=payload,
+        headers=owner["headers"],
+    )
+    assert sale.status_code == 400, sale.text
+
+
+def test_card_payment_records_total_as_amount_paid_with_zero_change(
+    client: TestClient, user_factory, business_factory, product_factory
+) -> None:
+    owner = user_factory()
+    business = business_factory(owner)
+    product = product_factory(business, owner, unit_price="10.00", cost_price="4.00")
+
+    sale = client.post(
+        f"/api/v1/businesses/{business['id']}/sales",
+        json=_cash_payload(product["id"], payment_method="card"),
+        headers=owner["headers"],
+    )
+    assert sale.status_code == 201, sale.text
+    body = sale.json()
+    assert _q(body["amount_paid"]) == Decimal("16.50")
+    assert _q(body["change_given"]) == Decimal("0.00")
+
+
+def test_decimal_cash_amounts_are_handled_safely(
+    client: TestClient, user_factory, business_factory, product_factory
+) -> None:
+    owner = user_factory()
+    business = business_factory(owner)
+    product = product_factory(business, owner, unit_price="10.00", cost_price="4.00")
+
+    sale = client.post(
+        f"/api/v1/businesses/{business['id']}/sales",
+        json=_cash_payload(product["id"], amount_paid="16.55"),
+        headers=owner["headers"],
+    )
+    assert sale.status_code == 201, sale.text
+    assert _q(sale.json()["change_given"]) == Decimal("0.05")

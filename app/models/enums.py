@@ -7,6 +7,12 @@ class MemberRole(str, enum.Enum):
     member = "member"
 
 
+class BusinessModel(str, enum.Enum):
+    stock = "stock"
+    service = "service"
+    hybrid = "hybrid"
+
+
 class StockMovementType(str, enum.Enum):
     in_ = "in"
     out = "out"

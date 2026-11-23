@@ -40,6 +40,7 @@ def test_analytics_overview(
             "items": [{"product_id": product_a["id"], "quantity": "2"}],
             "tax_rate": "10",
             "payment_method": "cash",
+            "amount_paid": "50.00",
         },
         headers=owner["headers"],
     )
@@ -133,7 +134,10 @@ def test_refunded_sales_are_excluded_from_performance(
     )
     sale = client.post(
         f"/api/v1/businesses/{business['id']}/sales",
-        json={"items": [{"product_id": product["id"], "quantity": "1"}]},
+        json={
+            "items": [{"product_id": product["id"], "quantity": "1"}],
+            "amount_paid": "10.00",
+        },
         headers=owner["headers"],
     ).json()
     client.post(

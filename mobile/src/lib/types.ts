@@ -91,6 +91,8 @@ export interface Sale {
   tax_rate: Decimal;
   tax_amount: Decimal;
   total: Decimal;
+  amount_paid: Decimal | null;
+  change_given: Decimal;
   notes: string | null;
   created_by: ID | null;
   created_at: string;

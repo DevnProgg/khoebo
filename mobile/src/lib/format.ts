@@ -156,3 +156,43 @@ export function titleCase(value: string): string {
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
+
+export function roundMoney(amount: number): number {
+  return Math.round(amount * 100) / 100;
+}
+
+export function generateCashShortcuts(total: number): number[] {
+  if (total <= 0) return [];
+  const rounded = roundMoney(total);
+  const candidates: number[] = [];
+  if (rounded < 10) {
+    candidates.push(5, 10, 20, 50);
+  } else if (rounded < 50) {
+    candidates.push(
+      Math.ceil(rounded / 10) * 10,
+      Math.ceil(rounded / 20) * 20,
+      50,
+      100,
+    );
+  } else if (rounded < 100) {
+    candidates.push(
+      Math.ceil(rounded / 50) * 50,
+      150,
+      200,
+    );
+  } else {
+    const ceil50 = Math.ceil(rounded / 50) * 50;
+    const ceil100 = Math.ceil(rounded / 100) * 100;
+    candidates.push(
+      ceil50,
+      ceil100,
+      ceil100 + 50,
+      ceil100 + 100,
+      Math.ceil((rounded + 1) / 200) * 200,
+      Math.ceil((rounded + 1) / 500) * 500,
+      Math.ceil((rounded + 1) / 1000) * 1000,
+    );
+  }
+  const above = Array.from(new Set(candidates.filter((c) => c > rounded))).sort((a, b) => a - b);
+  return [rounded, ...above.slice(0, 3)];
+}

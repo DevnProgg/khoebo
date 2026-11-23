@@ -6,6 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.capabilities import Capability, has_capability
 from app.core.security import decode_token
 from app.db.session import get_db
 from app.models.business import BusinessMember
@@ -70,4 +71,12 @@ def require_roles(membership: BusinessMember, *roles: MemberRole) -> None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You do not have permission to perform this action",
+        )
+
+
+def require_capability(membership: BusinessMember, capability: Capability) -> None:
+    if not has_capability(membership.business.business_model, capability):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This feature is not available for this business model",
         )
